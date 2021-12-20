@@ -4,3 +4,4 @@ __pycache__
 fold/core/*
 !fold/core/plugin.py
 !fold/core/config.py
+!fold/core/__init__.py
