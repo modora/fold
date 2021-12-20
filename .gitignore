@@ -1,5 +1,5 @@
 __pycache__
 
 # WIP
-fold/*
-!plugin.py
+fold/core/*
+!fold/core/plugin.py
