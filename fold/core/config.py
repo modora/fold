@@ -10,18 +10,20 @@ class ConfigParser(abc.ABC):
         pass
 
 
-class ConfigSection(abc.ABC):
+class ConfigSectionParser(abc.ABC):
     NAME: str = None
 
     def __init__(self, content: Any) -> None:
-        pass
+        self.content = content
 
     def parse(self) -> Any:
         pass
 
 
 class Config:
-    def __init__(self, conf: dict, sectionParsers: Iterable[ConfigSection]) -> None:
+    def __init__(
+        self, conf: dict, sectionParsers: Iterable[ConfigSectionParser]
+    ) -> None:
         # Create the mapping between section keys and their parsers
         sectionParserMap = {
             sectionParser.NAME: sectionParser for sectionParser in sectionParsers
@@ -39,7 +41,7 @@ class Config:
         cls,
         conf: str,
         configParser: ConfigParser,
-        sectionParsers: Iterable[ConfigSection],
+        sectionParsers: Iterable[ConfigSectionParser],
     ) -> Config:
         conf: dict = configParser.fromText(conf)
         return cls(conf, sectionParsers)
