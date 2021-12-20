@@ -3,3 +3,4 @@ __pycache__
 # WIP
 fold/core/*
 !fold/core/plugin.py
+!fold/core/config.py
