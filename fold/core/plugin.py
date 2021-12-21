@@ -21,12 +21,11 @@ class PluginManager:
         """
         self._plugin = obj
 
-    def load(self, module: str, name: str, package: Optional[str] = None) -> Plugin:
+    def load(self, name: str, package: Optional[str] = None) -> Plugin:
         """Dynamically load a module and import a plugin
 
         Args:
-            module (str): Name of the module to load
-            name (str): Name of the object to
+            name (str): Path to object in <module>.<object> notation
             package (str, optional): Required only if the module name is relative. Defaults to none.
 
         Returns:
@@ -45,7 +44,7 @@ class PluginManager:
         if not isinstance(obj, self._plugin):
             raise TypeError("Object is not a plugin")
 
-    def lazyLoad(self, module: str, name: str, package: Optional[str] = None) -> Any:
+    def lazyLoad(self, name: str, package: Optional[str] = None) -> Any:
         """Dynamically load a module and import an object
 
         A lazier implementation of the load function that doesn't do type checking for the object it imports. This
@@ -53,8 +52,7 @@ class PluginManager:
         another manager class.
 
         Args:
-            module (str): Name of the module to load
-            name (str): Name of the object to load
+            name (str): Path to object in <module>.<object> notation
             package (str, optional): Required only if the module name is relative. Defaults to none.
 
         Returns:
@@ -65,8 +63,14 @@ class PluginManager:
             AttributeError: Object does not exist in module
 
         """
-        m = importlib.import_module(module, package)
-        return getattr(m, name)
+
+        # We split the name at each "." and the final element is the object name, everything prior is the module name.
+        l = name.split(".")
+        moduleName = "".join(l[:-2])
+        objectName = l[-1]
+
+        m = importlib.import_module(moduleName, package)
+        return getattr(m, objectName)
 
     def discover(self, module: str) -> List[Plugin]:
         """Dynamically load a module and return a list of all plugin objects found
