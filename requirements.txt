@@ -1,0 +1,7 @@
+# core
+loguru
+
+# optionals
+pyfunctional
+toml
+pyyaml
