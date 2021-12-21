@@ -1,7 +1,6 @@
-from typing import Any, Optional, TypeVar, List
+from typing import Optional as _Optional, List as _List
 import importlib
-
-T = TypeVar("T")
+from .common import loadObjectDynamically as _loadObjectDynamically
 
 
 class Plugin:
@@ -21,7 +20,7 @@ class PluginManager:
         """
         self._plugin = obj
 
-    def load(self, name: str, package: Optional[str] = None) -> Plugin:
+    def load(self, name: str, package: _Optional[str] = None) -> Plugin:
         """Dynamically load a module and import a plugin
 
         Args:
@@ -37,42 +36,14 @@ class PluginManager:
             ImportError: Failed to load the module
         """
         try:
-            obj = self.lazyLoad(module, package)
+            obj = _loadObjectDynamically(name, package)
         except AttributeError as e:
             raise PluginNotFoundError("Plugin does not exist") from e
 
         if not isinstance(obj, self._plugin):
             raise TypeError("Object is not a plugin")
 
-    def lazyLoad(self, name: str, package: Optional[str] = None) -> Any:
-        """Dynamically load a module and import an object
-
-        A lazier implementation of the load function that doesn't do type checking for the object it imports. This
-        method is provided to the user for convenience in the case they want to import an object without creating
-        another manager class.
-
-        Args:
-            name (str): Path to object in <module>.<object> notation
-            package (str, optional): Required only if the module name is relative. Defaults to none.
-
-        Returns:
-            Any: Object loaded
-
-        Raises:
-            ImportError: Failed to load module
-            AttributeError: Object does not exist in module
-
-        """
-
-        # We split the name at each "." and the final element is the object name, everything prior is the module name.
-        l = name.split(".")
-        moduleName = "".join(l[:-2])
-        objectName = l[-1]
-
-        m = importlib.import_module(moduleName, package)
-        return getattr(m, objectName)
-
-    def discover(self, module: str) -> List[Plugin]:
+    def discover(self, module: str) -> _List[Plugin]:
         """Dynamically load a module and return a list of all plugin objects found
 
         Args:
