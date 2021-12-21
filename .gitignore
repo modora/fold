@@ -1,8 +1,1 @@
 __pycache__
-
-# WIP
-fold/core/*
-!fold/core/plugin.py
-!fold/core/config.py
-!fold/core/__init__.py
-!fold/core/common.py
