@@ -1,6 +1,6 @@
 from typing import Optional as _Optional, List as _List
 import importlib
-from .common import loadObjectDynamically as _loadObjectDynamically
+from fold.utils import loadObjectDynamically as _loadObjectDynamically
 
 
 class Plugin:

@@ -1,7 +1,6 @@
 from typing import (
     Any as _Any,
     List as _List,
-    TypeVar as _TypeVar,
     TypedDict as _TypedDict,
     Optional as _Optional,
     IO as _IO,
@@ -16,7 +15,7 @@ from functools import partial as _partial
 import sys as _sys
 
 from .config import ConfigSectionParser as _ConfigSectionParser
-from .common import loadObjectDynamically
+from fold.utils import loadObjectDynamically
 
 
 class RawLogHandlerConfig(_TypedDict):
