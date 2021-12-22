@@ -1,4 +1,3 @@
-from os import stat
 from typing import (
     Any as _Any,
     List as _List,
