@@ -150,8 +150,7 @@ class _LogHandler:
                 return obj  # override the sink str
             # The stdin case exists for safety reasons. IDK what happens when you pipe to stdin but I imagine it's bad.
             # Therefore, just assume stdin is a filename
-            # TODO: Apparently _ is not a catch all. so what is?
-            case [_, "stdin"]:  # Treat the sink as a path
+            case _:  # Treat the sink as a path
                 return _Path(sink)
 
     @classmethod
