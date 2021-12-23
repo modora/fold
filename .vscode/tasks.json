@@ -1,0 +1,31 @@
+{
+    // See https://go.microsoft.com/fwlink/?LinkId=733558
+    // for the documentation about the tasks.json format
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "label": "coverage",
+            "type": "shell",
+            "command": "python -m coverage run --source=./fold -m unittest discover -s ./test -p 'test*.py'",
+            "problemMatcher": []
+        },
+        {
+            "label": "coverage html",
+            "type": "shell",
+            "command": "python -m coverage html",
+            "problemMatcher": [],
+            "dependsOn": [
+                "coverage"
+            ]
+        },
+        {
+            "label": "coverage report",
+            "type": "shell",
+            "command": "python -m coverage report",
+            "problemMatcher": [],
+            "dependsOn": [
+                "coverage"
+            ]
+        }
+    ]
+}

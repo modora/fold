@@ -1,6 +1,6 @@
 import unittest
 
-import fold
+import fold.config
 
 
 class TestTOMLConfigParser(unittest.TestCase):

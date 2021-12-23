@@ -2,5 +2,8 @@
   "python.testing.unittestArgs": ["-v", "-s", "./test", "-p", "test_*.py"],
   "python.testing.pytestEnabled": false,
   "python.testing.unittestEnabled": true,
-  "cSpell.words": ["pikachu"]
+  "cSpell.words": [
+    "pikachu"
+  ],
+  "liveServer.settings.port": 5501
 }
