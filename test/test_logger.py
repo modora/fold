@@ -2,13 +2,13 @@ import unittest
 import sys
 from pathlib import Path
 
-import fold
+import fold.logger
 
 
 class TestLogConfigSectionParser(unittest.TestCase):
     @classmethod
     def setUpClass(cls) -> None:
-        cls.parser = fold.logger.LogConfigSectionParser
+        cls.parser = fold.logger.logger.LogConfigSectionParser
 
     def _test(self, content, expected):
         actual = self.parser(content).parse()

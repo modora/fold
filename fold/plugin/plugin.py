@@ -1,10 +1,14 @@
-from typing import Optional as _Optional, List as _List, Dict as _Dict
+from typing import Optional, List, Dict
 import importlib
-import fold.utils as _utils
+from fold.utils import loadObjectDynamically
 
 
 class Plugin:
-    pass
+    NAME: Optional[str] = None
+
+    @property
+    def name(self) -> str:
+        return self.NAME or self.__class__.__name__
 
 
 class PluginManager:
@@ -15,7 +19,7 @@ class PluginManager:
             obj (Plugin): The plugin class to manage
         """
         self._plugin = obj
-        self._cache: _Dict[str, Plugin] = {}
+        self._cache: Dict[str, Plugin] = {}
 
     @property
     def cache(self) -> Plugin:
@@ -24,11 +28,11 @@ class PluginManager:
     @cache.setter
     def cache(self, value: Plugin):
         # use Plugin.NAME attribute if defined; otherwise, default to the class name
-        name = getattr(value, "NAME") or value.__name__)
+        name = getattr(value, "NAME") or value.__name__
         self._cache[name] = value
 
     def load(
-        self, name: str, package: _Optional[str] = None, cache: _Optional[bool] = True
+        self, name: str, package: Optional[str] = None, cache: Optional[bool] = True
     ) -> Plugin:
         """Dynamically load a module and import a plugin
 
@@ -48,7 +52,7 @@ class PluginManager:
         if cache and name in self._cache:
             return self._cache[name]
         try:
-            obj = _utils.loadObjectDynamically(name, package)
+            obj = loadObjectDynamically(name, package)
         except AttributeError as e:
             raise ImportError("Plugin does not exist") from e
 
@@ -59,7 +63,7 @@ class PluginManager:
 
         return obj
 
-    def discover(self, module: str, cache: _Optional[bool] = True) -> _List[Plugin]:
+    def discover(self, module: str, cache: Optional[bool] = True) -> List[Plugin]:
         """Dynamically load a module and return a list of all plugin objects found
 
         Args:
@@ -72,7 +76,7 @@ class PluginManager:
 
         m = importlib.import_module(module)
         # Check non-private objects whether they are Plugin objects
-        plugins: _List[Plugin] = []
+        plugins: List[Plugin] = []
         for obj in [
             getattr(m, name) for name in dir(m) if not name.startswith("_")
         ]:  # get non-private objects

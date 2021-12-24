@@ -1,61 +1,61 @@
 from typing import (
-    Any as _Any,
-    List as _List,
-    TypedDict as _TypedDict,
-    Optional as _Optional,
-    IO as _IO,
-    Callable as _Callable,
-    Coroutine as _Coroutine,
+    Any,
+    List,
+    TypedDict,
+    Optional,
+    IO,
+    Callable,
+    Coroutine,
 )
-from logging import Handler as _Handler
-from loguru import logger
-from pathlib import Path as _Path
-from functional import seq as _seq
-from functools import partial as _partial
-import sys as _sys
+from logging import Handler
+from pathlib import Path
+from functools import partial
+import sys
 
-from .config import ConfigSectionParser as _ConfigSectionParser
+from functional import seq
+
+from fold.config import ConfigSectionParser
 from fold.utils import loadObjectDynamically
 
 
-class RawLogHandlerConfig(_TypedDict):
+class RawLogHandlerConfig(TypedDict):
     sink: str
-    level: _Optional[int | str]
-    format: _Optional[str]
-    filter: _Optional[str | dict]
-    colorize: _Optional[bool]
-    serialize: _Optional[bool]
-    backtrace: _Optional[bool]
-    diagnose: _Optional[bool]
-    enqueue: _Optional[bool]
-    catch: _Optional[bool]
-    kwargs: _Optional[dict]
+    level: Optional[int | str]
+    format: Optional[str]
+    filter: Optional[str | dict]
+    colorize: Optional[bool]
+    serialize: Optional[bool]
+    backtrace: Optional[bool]
+    diagnose: Optional[bool]
+    enqueue: Optional[bool]
+    catch: Optional[bool]
+    kwargs: Optional[dict]
     # Custom objects will be dynamically loaded and override the key-value pair
-    custom_sink: _Optional[str]  # required if sink == "custom"
-    custom_format: _Optional[str]  # required if format == "custom"
-    custom_filter: _Optional[str]  # required if filter == "custom"
+    custom_sink: Optional[str]  # required if sink == "custom"
+    custom_format: Optional[str]  # required if format == "custom"
+    custom_filter: Optional[str]  # required if filter == "custom"
 
 
-_ParsedSink = str | _IO | _Path | _Callable | _Coroutine | _Handler
-_ParsedFormat = _Optional[str | _Callable]
-_ParsedFilter = _Optional[str | dict | _Callable]
+ParsedSink = str | IO | Path | Callable | Coroutine | Handler
+ParsedFormat = Optional[str | Callable]
+ParsedFilter = Optional[str | dict | Callable]
 
 
-class ParsedLogHandlerConfig(_TypedDict):
-    sink: _ParsedSink
-    level: _Optional[int | str]
-    format: _ParsedFormat
-    filter: _ParsedFilter
-    colorize: _Optional[bool]
-    serialize: _Optional[bool]
-    backtrace: _Optional[bool]
-    diagnose: _Optional[bool]
-    enqueue: _Optional[bool]
-    catch: _Optional[bool]
-    kwargs: _Optional[dict]
+class ParsedLogHandlerConfig(TypedDict):
+    sink: ParsedSink
+    level: Optional[int | str]
+    format: ParsedFormat
+    filter: ParsedFilter
+    colorize: Optional[bool]
+    serialize: Optional[bool]
+    backtrace: Optional[bool]
+    diagnose: Optional[bool]
+    enqueue: Optional[bool]
+    catch: Optional[bool]
+    kwargs: Optional[dict]
 
 
-class _LogHandler:
+class LogHandler:
     @classmethod
     def checkConfig(cls, config: RawLogHandlerConfig):
         """Checks whether the specified input config is valid
@@ -68,13 +68,13 @@ class _LogHandler:
             KeyError: Unknown key
         """
 
-        _seq(config.items()).map(
-            _partial(cls._checkInvalidKey, reference=RawLogHandlerConfig)
-        ).map(_partial(cls._checkConfigTypes, reference=RawLogHandlerConfig))
+        seq(config.items()).map(
+            partial(cls._checkInvalidKey, reference=RawLogHandlerConfig)
+        ).map(partial(cls._checkConfigTypes, reference=RawLogHandlerConfig))
 
     # Config check methods
     @staticmethod
-    def _checkInvalidKey(key: str, value: _Any, reference: _Any):
+    def _checkInvalidKey(key: str, value: Any, reference: Any):
         """Check whether a key is known
 
         Args:
@@ -89,7 +89,7 @@ class _LogHandler:
             raise KeyError(f"Unknown key: {key}")
 
     @staticmethod
-    def _checkConfigTypes(key: str, value: _Any, reference: _Any):
+    def _checkConfigTypes(key: str, value: Any, reference: Any):
         """Check whether config value is the expected type
 
         Args:
@@ -106,7 +106,7 @@ class _LogHandler:
 
     @classmethod
     def parseConfig(
-        cls, config: RawLogHandlerConfig, validate: _Optional[bool] = True
+        cls, config: RawLogHandlerConfig, validate: Optional[bool] = True
     ) -> ParsedLogHandlerConfig:
         if validate:
             cls.checkConfig(config)  # Check whether config is valid
@@ -132,14 +132,14 @@ class _LogHandler:
 
     @classmethod
     def _parseSinkConfig(
-        cls, config: RawLogHandlerConfig, validate: _Optional[bool] = True
-    ) -> _ParsedSink:
+        cls, config: RawLogHandlerConfig, validate: Optional[bool] = True
+    ) -> ParsedSink:
         sink = config["sink"]
         match sink:
             case "stdout":
-                return _sys.stdout
+                return sys.stdout
             case "stderr":
-                return _sys.stderr
+                return sys.stderr
             case "custom":
                 # Attempt to load the object
                 obj = loadObjectDynamically(sink)
@@ -151,12 +151,12 @@ class _LogHandler:
             # The stdin case exists for safety reasons. IDK what happens when you pipe to stdin but I imagine it's bad.
             # Therefore, just assume stdin is a filename
             case _:  # Treat the sink as a path
-                return _Path(sink)
+                return Path(sink)
 
     @classmethod
     def _parseFormatConfig(
-        cls, config: RawLogHandlerConfig, validate: _Optional[bool] = True
-    ) -> _ParsedFormat:
+        cls, config: RawLogHandlerConfig, validate: Optional[bool] = True
+    ) -> ParsedFormat:
         format = config.get("format")
         match format:
             case "custom":
@@ -176,8 +176,8 @@ class _LogHandler:
 
     @classmethod
     def _parseFilterConfig(
-        cls, config: RawLogHandlerConfig, validate: _Optional[bool] = True
-    ) -> _ParsedFilter:
+        cls, config: RawLogHandlerConfig, validate: Optional[bool] = True
+    ) -> ParsedFilter:
         filter = config.get("filter")
         match filter:
             case "custom":
@@ -196,16 +196,11 @@ class _LogHandler:
                 return filter
 
 
-class LogConfigSectionParser(_ConfigSectionParser):
+class LogConfigSectionParser(ConfigSectionParser):
     NAME = "log"
 
-    def __init__(self, content: _List[RawLogHandlerConfig]) -> None:
+    def __init__(self, content: List[RawLogHandlerConfig]) -> None:
         super().__init__(content)
 
-    def parse(self) -> _List[ParsedLogHandlerConfig]:
-        return [_LogHandler.parseConfig(handler) for handler in self.content]
-
-
-def configureLogger(config: _List[ParsedLogHandlerConfig]):
-    for handler in config:
-        logger.add(**handler)
+    def parse(self) -> List[ParsedLogHandlerConfig]:
+        return [LogHandler.parseConfig(handler) for handler in self.content]

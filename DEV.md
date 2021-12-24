@@ -1,0 +1,2 @@
+# Architecture
+Plugin > Config > Logger

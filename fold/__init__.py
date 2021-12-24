@@ -1,2 +1,2 @@
-from . import utils
-from .core import *
+from . import utils, plugin
+from .plugin import Plugin, PluginManager, plugin
