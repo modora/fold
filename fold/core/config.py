@@ -1,21 +1,25 @@
 from __future__ import annotations
 
-from typing import Any, Iterable
-import abc
+from typing import Any, Iterable, Dict
+from abc import ABC, abstractmethod
+
+from .plugin import Plugin
 
 
-class ConfigParser(abc.ABC):
+class ConfigFileParser(ABC, Plugin):
     @classmethod
+    @abstractmethod
     def fromText(cls, text: str) -> dict:
         pass
 
 
-class ConfigSectionParser(abc.ABC):
+class ConfigSectionParser(ABC, Plugin):
     NAME: str = None
 
     def __init__(self, content: Any) -> None:
         self.content = content
 
+    @abstractmethod
     def parse(self) -> Any:
         pass
 
@@ -26,7 +30,7 @@ class Config:
     ) -> None:
         # Create the mapping between section keys and their parsers
         sectionParserMap = {
-            sectionParser.NAME: sectionParser for sectionParser in sectionParsers
+            sectionParser.name: sectionParser for sectionParser in sectionParsers
         }
 
         # Parse the actual config now
@@ -40,7 +44,7 @@ class Config:
     def fromText(
         cls,
         conf: str,
-        configParser: ConfigParser,
+        configParser: ConfigFileParser,
         sectionParsers: Iterable[ConfigSectionParser],
     ) -> Config:
         conf: dict = configParser.fromText(conf)

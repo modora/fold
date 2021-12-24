@@ -1,9 +1,9 @@
 import toml
 
-from fold import ConfigParser
+from fold import ConfigFileParser
 
 
-class TOMLConfigParser(ConfigParser):
+class TOMLConfigParser(ConfigFileParser):
     @classmethod
     def fromText(cls, text: str) -> dict:
         return toml.loads(text)

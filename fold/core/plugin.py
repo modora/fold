@@ -22,9 +22,9 @@ class PluginManager:
         return self._cache
 
     @cache.setter
-    def cache(self, value):
-        # use Plugin.NAME attribute if exists, otherwise, default to the class name
-        name = getattr(value, "NAME", value.__name__)
+    def cache(self, value: Plugin):
+        # use Plugin.NAME attribute if defined; otherwise, default to the class name
+        name = getattr(value, "NAME") or value.__name__)
         self._cache[name] = value
 
     def load(
@@ -73,8 +73,11 @@ class PluginManager:
         m = importlib.import_module(module)
         # Check non-private objects whether they are Plugin objects
         plugins: _List[Plugin] = []
-        for obj in [getattr(m, name) for name in dir(m) if not name.startswith("_")]:
-            if issubclass(obj, self._plugin):
+        for obj in [
+            getattr(m, name) for name in dir(m) if not name.startswith("_")
+        ]:  # get non-private objects
+            if issubclass(obj, self._plugin):  # check if plugin
+                obj: Plugin
                 self._cache = obj
                 plugins.append(obj)
         return plugins
