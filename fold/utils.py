@@ -1,4 +1,4 @@
-from typing import Optional, Any, Tuple
+from typing import Optional, Any, Tuple, List
 import re
 import importlib
 
@@ -21,15 +21,16 @@ def parseModuleObjectString(string: str) -> Tuple[str, str]:
     # I am choosing to implement using regex over str.split because I don't know how Python will handle non-ASCII
     # modules and objects. Regex will enforce ASCII only
 
+    matches: List[str]
     # Module
-    if not (matches := re.search(r"(\w+)\.", string)):
+    if not (matches := re.findall(r"(\w+)\.", string)):
         raise ValueError(f"Unable to parse module in {string}")
-    module: str = ".".join(matches.groups()[:-2])
+    module = ".".join(matches)
 
     # Object
-    if not (matches := re.search(r"\.(\w+)", string)):
+    if not (matches := re.findall(r"\.(\w+)", string)):
         raise ValueError(f"Unable to parse object in {string}")
-    obj: str = matches.groups()[-1]
+    obj = matches[-1]
 
     return (module, obj)
 
