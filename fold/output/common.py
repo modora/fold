@@ -1,9 +1,10 @@
 from typing import Any
-from fold import Plugin
 import abc
 
+from fold import Plugin
 
-class OutputPlugin(Plugin):
+
+class OutputPlugin(abc.ABC, Plugin):
     @abc.abstractmethod
     def __init__(self, config) -> None:
         pass
