@@ -1,6 +1,6 @@
 from typing import Optional, List, Dict
 import importlib
-from fold.utils import loadObjectDynamically
+from fold.utils import parseModuleObjectString
 
 
 class Plugin:
@@ -52,7 +52,10 @@ class PluginManager:
         if cache and name in self._cache:
             return self._cache[name]
         try:
-            obj = loadObjectDynamically(name, package)
+            moduleName, objectName = parseModuleObjectString(name)
+
+            module = importlib.import_module(moduleName, package)
+            obj = getattr(module, objectName)
         except AttributeError as e:
             raise ImportError("Plugin does not exist") from e
 
