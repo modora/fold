@@ -1,4 +1,4 @@
-from typing import Optional, List, Dict
+from typing import Optional, List, Dict, Set
 import importlib
 from fold.utils import parseModuleObjectString
 
@@ -27,9 +27,7 @@ class PluginManager:
 
     @cache.setter
     def cache(self, value: Plugin):
-        # use Plugin.NAME attribute if defined; otherwise, default to the class name
-        name = getattr(value, "NAME") or value.__name__
-        self._cache[name] = value
+        self._cache[value.name] = value
 
     def load(
         self, name: str, package: Optional[str] = None, cache: Optional[bool] = True
@@ -62,11 +60,11 @@ class PluginManager:
         if not isinstance(obj, self._plugin):
             raise TypeError("Object is not a plugin")
 
-        self._cache = obj
+        self.cache = obj
 
         return obj
 
-    def discover(self, module: str, cache: Optional[bool] = True) -> List[Plugin]:
+    def discover(self, module: str, cache: Optional[bool] = True) -> Set[Plugin]:
         """Dynamically load a module and return a list of all plugin objects found
 
         Args:
@@ -79,12 +77,12 @@ class PluginManager:
 
         m = importlib.import_module(module)
         # Check non-private objects whether they are Plugin objects
-        plugins: List[Plugin] = []
+        plugins: Set[Plugin] = set()
         for obj in [
             getattr(m, name) for name in dir(m) if not name.startswith("_")
         ]:  # get non-private objects
             if issubclass(obj, self._plugin):  # check if plugin
                 obj: Plugin
-                self._cache = obj
-                plugins.append(obj)
+                self.cache = obj
+                plugins.add(obj)
         return plugins
