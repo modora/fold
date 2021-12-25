@@ -1,4 +1,4 @@
-from typing import Any, Optional
+from typing import Any, Optional, TypedDict
 import sys
 
 from .common import OutputPlugin, Content
@@ -11,8 +11,9 @@ class StdoutOutputPlugin(OutputPlugin):
         super().__init__(config)
 
     @classmethod
-    def parseConfig(cls, config: Optional[Content]) -> Optional[Content]:
-        return super().parseConfig(config)
+    def parseConfig(cls, config: Optional[Content]) -> None:
+        # It's stdout... there is no configuration. Just ignore everything
+        return None
 
     def write(self, data: Any):
         sys.stdout.write(str(data) + "\n")
