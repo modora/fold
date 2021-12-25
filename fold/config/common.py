@@ -2,7 +2,7 @@ from typing import Any, Iterable, Optional, Dict
 from abc import ABC, abstractmethod
 from pathlib import Path
 
-from fold import Plugin, PluginManager
+from fold.plugin import Plugin, PluginManager
 
 Content = Dict[str, Any]
 

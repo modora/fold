@@ -15,7 +15,6 @@ import sys
 from functional import seq
 
 from fold.config import ConfigSectionParser
-from fold.utils import loadObjectDynamically
 
 
 class RawLogHandlerConfig(TypedDict):
@@ -142,7 +141,8 @@ class LogHandler:
                 return sys.stderr
             case "custom":
                 # Attempt to load the object
-                obj = loadObjectDynamically(sink)
+                # obj = loadObjectDynamically(sink)
+                obj=None
                 # Validate whether the object is a valid sink
                 if validate:
                     cls._checkConfigTypes("sink", obj, reference=ParsedLogHandlerConfig)
