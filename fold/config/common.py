@@ -2,7 +2,7 @@ from typing import Any, Iterable, Optional, Dict
 from abc import ABC, abstractmethod
 from pathlib import Path
 
-from fold import Plugin
+from fold import Plugin, PluginManager
 
 Content = Dict[str, Any]
 
@@ -21,8 +21,9 @@ class ConfigFileParser(ABC, Plugin):
 
 
 class ConfigSectionParser(ABC, Plugin):
-    def __init__(self, content: Content) -> None:
+    def __init__(self, content: Content, manager: PluginManager) -> None:
         self.content = content
+        self.manager = manager
 
     @abstractmethod
     def parse(self) -> Any:
