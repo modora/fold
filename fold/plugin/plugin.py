@@ -31,14 +31,14 @@ class PluginManager:
         self._cache[value.name] = value
 
     def load(
-        self, name: str, package: Optional[str] = None, cache: Optional[bool] = True
+        self, name: str, package: Optional[str] = None, cache: bool = True
     ) -> Plugin:
         """Dynamically load a module and import a plugin
 
         Args:
             name (str): Path to object in <module>.<object> notation
-            package (str, optional): Required only if the module name is relative. Defaults to none.
-            cache (bool, optional): Use cache result
+            package (str, optional): Required only if the module name is relative. Defaults to None.
+            cache (bool, optional): Use cache result. Defaults to True.
 
         Returns:
             Plugin: Plugin object loaded
@@ -65,7 +65,7 @@ class PluginManager:
 
         return obj
 
-    def discover(self, module: str, cache: Optional[bool] = True) -> Dict[str, Plugin]:
+    def discover(self, module: str) -> Dict[str, Plugin]:
         """Dynamically load a module and return a list of all plugin objects found
 
         Args:
