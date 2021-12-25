@@ -1,4 +1,4 @@
-from typing import Optional, List, Dict, Set
+from typing import Optional, Dict, Set
 import importlib
 from fold.utils import loadObjectDynamically
 
