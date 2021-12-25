@@ -1,10 +1,10 @@
-from typing import Any, Iterable, Optional, Dict
+from typing import Any, Iterable, Optional, Dict, List
 from abc import ABC, abstractmethod
 from pathlib import Path
 
 from fold.plugin import Plugin, PluginManager
 
-Content = Dict[str, Any]
+Content = str | int | float | List["Content"] | Dict[str, "Content"]
 
 
 class ConfigError(Exception):
@@ -16,7 +16,7 @@ class ConfigFileParser(ABC, Plugin):
 
     @classmethod
     @abstractmethod
-    def fromText(cls, text: str) -> Content:
+    def fromText(cls, text: str) -> Dict[str, Content]:
         pass
 
 
@@ -39,15 +39,17 @@ class ConfigManager(Plugin):
         self.sections = {section.name: section for section in sections}
         self.parsers = parsers or set()
 
-    def _parseContent(self, content: Content) -> Content:
-        parsedContent: Content = {}
+    def _parseContent(self, content: Dict[str, Content]) -> Dict[str, Content]:
+        parsedContent: Dict[str, Content] = {}
         for sectionName, sectionContent in content.items():
             parsedContent[sectionName] = self.sections[sectionName](
                 sectionContent
             ).parse()
         return parsedContent
 
-    def fromText(self, text: str, parser: Optional[ConfigFileParser] = None) -> Content:
+    def fromText(
+        self, text: str, parser: Optional[ConfigFileParser] = None
+    ) -> Dict[str, Content]:
         if parser:
             content = parser.fromText(text)
 
@@ -61,7 +63,9 @@ class ConfigManager(Plugin):
                 pass
         raise ConfigError(f"Unable to parse {text}")
 
-    def fromPath(self, path: str | Path, parser: Optional[ConfigFileParser] = None):
+    def fromPath(
+        self, path: str | Path, parser: Optional[ConfigFileParser] = None
+    ) -> Dict[str, Content]:
         path = Path(path).resolve()  # convert to Path
 
         # Get the contents of the file and pass to the parser
