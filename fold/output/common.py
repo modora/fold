@@ -15,7 +15,7 @@ class OutputPlugin(abc.ABC, Plugin):
     NAME: str = None
 
     @abc.abstractmethod
-    def __init__(self, config: List[OutputSection]) -> None:
+    def __init__(self, config: Optional[Content]) -> None:
         pass
 
     @classmethod
@@ -32,6 +32,11 @@ class OutputPlugin(abc.ABC, Plugin):
 
     @abc.abstractmethod
     def write(self, data: Any):
+        """Write data to output
+
+        Args:
+            data (Any): Data to publish
+        """
         pass
 
 
