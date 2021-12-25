@@ -65,7 +65,7 @@ class PluginManager:
 
         return obj
 
-    def discover(self, module: str, cache: Optional[bool] = True) -> Set[Plugin]:
+    def discover(self, module: str, cache: Optional[bool] = True) -> Dict[str, Plugin]:
         """Dynamically load a module and return a list of all plugin objects found
 
         Args:
@@ -73,17 +73,17 @@ class PluginManager:
             cache (bool, optional): Use cache result
 
         Returns:
-            List[Plugin]: List of plugins discovered in the module
+            Dict[Plugin]: Dictionary of plugins discovered in the module in {name: Plugin} format
         """
 
         m = importlib.import_module(module)
         # Check non-private objects whether they are Plugin objects
-        plugins: Set[Plugin] = set()
+        plugins: Dict[str, Plugin] = {}
         for obj in [
             getattr(m, name) for name in dir(m) if not name.startswith("_")
         ]:  # get non-private objects
             if issubclass(obj, self._plugin):  # check if plugin
                 obj: Plugin
                 self.cache = obj
-                plugins.add(obj)
+                plugins.update({obj.name: obj})
         return plugins
