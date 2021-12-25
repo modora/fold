@@ -26,9 +26,9 @@ class PluginManager:
     def cache(self) -> Plugin:
         return self._cache
 
-    @cache.setter
-    def cache(self, value: Plugin):
-        self._cache[value.name] = value
+    def flushCache(self):
+        """Flush plugin cache"""
+        self._cache = {}
 
     def load(
         self, name: str, package: Optional[str] = None, cache: bool = True
@@ -36,7 +36,7 @@ class PluginManager:
         """Dynamically load a module and import a plugin
 
         Args:
-            name (str): Path to object in <module>.<object> notation
+            name (str): Path to object in <module>/<object> notation
             package (str, optional): Required only if the module name is relative. Defaults to None.
             cache (bool, optional): Use cache result. Defaults to True.
 
@@ -48,8 +48,8 @@ class PluginManager:
             ImportError: Failed to load the module
         """
 
-        if cache and name in self._cache:
-            return self._cache[name]
+        if cache and name in self.cache:
+            return self.cache[name]
         try:
             moduleName, objectName = parseModuleObjectString(name)
 
@@ -61,29 +61,34 @@ class PluginManager:
         if not isinstance(obj, self._plugin):
             raise TypeError("Object is not a plugin")
 
-        self.cache = obj
+        if cache:
+            self._cache[name] = obj
 
         return obj
 
-    def discover(self, module: str) -> Dict[str, Plugin]:
-        """Dynamically load a module and return a list of all plugin objects found
+    def discover(
+        self, name: str, package: Optional[str] = None, cache: bool = True
+    ) -> Set[Plugin]:
+        """Dynamically load a module and return a set of all plugin objects found
 
         Args:
-            module (str): Name of the module to load
-            cache (bool, optional): Use cache result
+            name (str): Path to module in dot notation
+            package (str, optional): Required only if the module name is relative. Defaults to None.
+            cache (bool, optional): Use cache result. Defaults to True.
 
         Returns:
-            Dict[Plugin]: Dictionary of plugins discovered in the module in {name: Plugin} format
+            Set[Plugin]: Dictionary of plugins discovered in the module in {name: Plugin} format
         """
 
-        m = importlib.import_module(module)
+        if cache and name in self.cache:
+            return self.cache[name]
+        m = importlib.import_module(name, package)
         # Check non-private objects whether they are Plugin objects
-        plugins: Dict[str, Plugin] = {}
+        plugins: Set[Plugin] = set()
         for obj in [
             getattr(m, name) for name in dir(m) if not name.startswith("_")
         ]:  # get non-private objects
             if issubclass(obj, self._plugin):  # check if plugin
-                obj: Plugin
-                self.cache = obj
-                plugins.update({obj.name: obj})
+                plugins.add(obj)
+        self.cache[name] = plugins
         return plugins
