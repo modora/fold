@@ -35,19 +35,17 @@ class OutputPlugin(abc.ABC, Plugin):
         pass
 
 
-outputPluginManager = PluginManager(OutputPlugin)
-
-
 class OutputSectionParser(ConfigSectionParser):
-    def __init__(
-        self, content: List[OutputSection], manager: Optional[PluginManager] = None
-    ) -> None:
-        super().__init__(content, manager)
+    def __init__(self, content: List[OutputSection]) -> None:
+        super().__init__(content)
         self.content: List[OutputSection]
-        if self.manager is None:
-            self.manager = outputPluginManager
 
-    def parse(self, paths: Optional[Iterable[str]] = None) -> List[OutputSection]:
+    def parse(
+        self,
+        paths: Optional[Iterable[str]] = None,
+        *args,
+        **kwargs,
+    ) -> List[OutputSection]:
         """Parse the output config section
 
         Args:
@@ -60,8 +58,10 @@ class OutputSectionParser(ConfigSectionParser):
         """
         if not paths:
             paths = ["fold.output"]
+        pluginClass = kwargs.get("pluginClass", OutputPlugin)
 
         parsedSection: List[OutputSection] = []
+        manager = PluginManager(pluginClass)
 
         for rawOutput in self.content:
             if not isinstance(rawOutput, OutputSection):
@@ -69,7 +69,7 @@ class OutputSectionParser(ConfigSectionParser):
 
             parsedOutput: OutputSection = {}
             parsedOutput["type"] = rawOutput["type"]
-            parsedOutput["args"] = self._parseArgsConfig(rawOutput, paths)
+            parsedOutput["args"] = self._parseArgsConfig(rawOutput, paths, manager)
 
             # double-chuck the parsedOutput is valid
             if not isinstance(parsedOutput, OutputSection):
@@ -78,7 +78,10 @@ class OutputSectionParser(ConfigSectionParser):
             parsedSection.append(parsedOutput)
         return parsedSection
 
-    def _loadPlugins(self, paths: Iterable[str]) -> Dict[str, OutputPlugin]:
+    @classmethod
+    def _loadPlugins(
+        cls, paths: Iterable[str], manager: PluginManager
+    ) -> Dict[str, OutputPlugin]:
         plugins: Dict[str, OutputPlugin] = {}
         for path in paths:
             # Try to parse the module-string. If it works, then it's a module; otherwise, it's an object.
@@ -86,17 +89,20 @@ class OutputSectionParser(ConfigSectionParser):
                 parseModuleObjectString(path)
             except ValueError:  # it's a module
                 plugins.update(
-                    {plugin.name: plugin for plugin in self.manager.discover(path)}
+                    {plugin.name: plugin for plugin in manager.discover(path)}
                 )
             else:
-                plugin = self.manager.load(path)
+                plugin = manager.load(path)
                 plugins.update({plugin.name: plugin})
         return plugins
 
+    @classmethod
     def _parseArgsConfig(
-        self, content: OutputSection, paths: Iterable[str]
+        cls, content: OutputSection, paths: Iterable[str], manager: PluginManager
     ) -> Optional[Content]:
-        plugins = self._loadPlugins(paths)  # collect all the known output formats
+        plugins = cls._loadPlugins(
+            paths, manager
+        )  # collect all the known output formats
         type = content["type"]
         if not (args := content.get("args")):
             return

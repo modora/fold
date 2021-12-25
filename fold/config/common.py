@@ -21,9 +21,8 @@ class ConfigFileParser(ABC, Plugin):
 
 
 class ConfigSectionParser(ABC, Plugin):
-    def __init__(self, content: Content, manager: PluginManager) -> None:
+    def __init__(self, content: Content) -> None:
         self.content = content
-        self.manager = manager
 
     @abstractmethod
     def parse(self, *args, **kwargs) -> Any:
