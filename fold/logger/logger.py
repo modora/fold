@@ -14,8 +14,8 @@ import sys
 
 from functional import seq
 
+from fold.utils import loadObjectDynamically
 from fold.config import ConfigSectionParser
-
 
 class RawLogHandlerConfig(TypedDict):
     sink: str
