@@ -26,7 +26,7 @@ class ConfigSectionParser(ABC, Plugin):
         self.manager = manager
 
     @abstractmethod
-    def parse(self) -> Any:
+    def parse(self, *args, **kwargs) -> Any:
         pass
 
 
