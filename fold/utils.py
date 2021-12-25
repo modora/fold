@@ -1,10 +1,9 @@
-from typing import Optional, Any, Tuple, List
+from typing import Tuple
 import re
-import importlib
 
 
 def parseModuleObjectString(string: str) -> Tuple[str, str]:
-    """Parse a string using the notation <module>.<object>
+    """Parse a string using the notation <module>/<object>
 
     Args:
         string (str): String to parse
@@ -18,18 +17,10 @@ def parseModuleObjectString(string: str) -> Tuple[str, str]:
     """
 
     # We split the name at each "." and the final element is the object name, everything prior is the module name.
-    # I am choosing to implement using regex over str.split because I don't know how Python will handle non-ASCII
-    # modules and objects. Regex will enforce ASCII only
+    # I am choosing to implement using regex over str.split because regex handles character checks
 
-    matches: List[str]
-    # Module
-    if not (matches := re.findall(r"(\w+)\.", string)):
-        raise ValueError(f"Unable to parse module in {string}")
-    module = ".".join(matches)
+    pattern = r"([\w\.]+)\/(\w+)"
+    if not (match := re.match(pattern, string)):
+        raise ValueError(f"Unable to parse string {string}")
 
-    # Object
-    if not (matches := re.findall(r"\.(\w+)", string)):
-        raise ValueError(f"Unable to parse object in {string}")
-    obj = matches[-1]
-
-    return (module, obj)
+    return (match.group(0), match.group(1))

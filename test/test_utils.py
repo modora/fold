@@ -12,13 +12,13 @@ class TestModuleObjectStringParser(unittest.TestCase):
         self.assertRaises(exception, fold.utils.parseModuleObjectString, string)
 
     def testSysStdout(self):
-        string = "sys.stdout"
+        string = "sys/stdout"
         expected = ("sys", "stdout")
 
         self._test(string, expected)
 
     def testOSPathAbspath(self):
-        string = "os.path.abspath"
+        string = "os.path/abspath"
         expected = ("os.path", "abspath")
 
         self._test(string, expected)
