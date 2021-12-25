@@ -16,4 +16,6 @@ class StdoutOutputPlugin(OutputPlugin):
         return None
 
     def write(self, data: Any):
+        if data is None:
+            data = ""
         sys.stdout.write(str(data) + "\n")
