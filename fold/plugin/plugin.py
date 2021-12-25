@@ -7,8 +7,9 @@ class Plugin:
     NAME: Optional[str] = None
 
     @property
-    def name(self) -> str:
-        return self.NAME or self.__class__.__name__
+    @classmethod
+    def name(cls) -> str:
+        return cls.NAME or cls.__name__
 
 
 class PluginManager:
