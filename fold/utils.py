@@ -23,4 +23,4 @@ def parseModuleObjectString(string: str) -> Tuple[str, str]:
     if not (match := re.match(pattern, string)):
         raise ValueError(f"Unable to parse string {string}")
 
-    return (match.group(0), match.group(1))
+    return (match.group(1), match.group(2))
