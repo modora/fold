@@ -1,4 +1,4 @@
-from typing import Tuple, Optional, Any
+from typing import Tuple, Optional, Any, List
 import re
 import importlib
 
@@ -19,22 +19,25 @@ def parseModuleObjectString(string: str) -> Tuple[str, str]:
 
     # I am choosing to implement using regex over str.split because regex handles character checks
 
-    pattern = "^([\w\.]+):?([\w\.]+)?"
+    pattern = r"([\w\.]+):?([\w\.]+)?"
     if not (match := re.match(pattern, string)):
         raise ValueError(f"Unable to parse string {string}")
 
     return (match.group(1), match.group(2))
 
 
-def loadObjectDynamically(name: str, package: Optional[str] = None) -> Any:
-    """Dynamically load a module and import an object
+def parseObjectString(string: str) -> Tuple[str, List[str]]:
+    pattern = re.compile(r"(\w+)")
+    matches = pattern.findall(string)
 
-    A lazier implementation of the load function that doesn't do type checking for the object it imports. This
-    method is provided to the user for convenience in the case they want to import an object without creating
-    another manager class.
+    return (matches[0], matches[1:])
+
+
+def loadObjectDynamically(name: str, package: Optional[str] = None) -> Any:
+    """Dynamically load a module or object
 
     Args:
-        name (str): Path to object in <module>/<object> notation
+        name (str): Path to object in <module>:<object> notation
         package (str, optional): Required only if the module name is relative. Defaults to none.
 
     Returns:
@@ -46,7 +49,14 @@ def loadObjectDynamically(name: str, package: Optional[str] = None) -> Any:
 
     """
 
-    moduleName, objectName = parseModuleObjectString(name)
+    moduleName, objectString = parseModuleObjectString(name)
 
     m = importlib.import_module(moduleName, package)
-    return getattr(m, objectName)
+
+    if objectString is None:
+        return m
+    objectName, attrs = parseObjectString(objectString)
+    obj = getattr(m, objectName)
+    for attr in attrs:
+        obj = getattr(m, attr)
+    return obj

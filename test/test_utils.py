@@ -71,3 +71,87 @@ class TestModuleObjectStringParser(unittest.TestCase):
         expected = (".module", None)
 
         self._test(string, expected)
+
+    def testModuleDot(self):
+        string = "module."
+        expected = ("module", None)
+
+        self._test(string, expected)
+
+    def testDotModuleDot(self):
+        string = ".module."
+        expected = ("module", None)
+
+        self._test(string, expected)
+
+    def testDotObject(self):
+        string = "module:.object"
+        expected = ("module", "object")
+
+        self._test(string, expected)
+
+    def testObjectDot(self):
+        string = "module:object."
+        expected = ("module", "object")
+
+        self._test(string, expected)
+
+    def testDotObjectDot(self):
+        string = "module:.object."
+        expected = ("module", "object")
+
+        self._test(string, expected)
+
+
+class TestObjectStringParser(unittest.TestCase):
+    def _test(self, expected, name):
+        result = fold.utils.parseObjectString(name)
+        self.assertTupleEqual(expected, result)
+
+    def testObject(self):
+        name = "object"
+        expected = ("object", [])
+
+        self._test(expected, name)
+
+    def testObjectAttr(self):
+        name = "object.attr"
+        expected = ("object", ["attr"])
+
+        self._test(expected, name)
+
+    def testObjectAttrSubattr(self):
+        name = "object.attr.subattr"
+        expected = ("object", ["attr", "subattr"])
+
+        self._test(expected, name)
+
+
+class TestDynamicLoader(unittest.TestCase):
+    def testImportMath(self):
+        import math as expected
+
+        name = "math"
+        result = fold.utils.loadObjectDynamically(name)
+        self.assertEqual(expected, result)
+
+    def testImportOsPath(self):
+        import os.path as expected
+
+        name = "os.path"
+        result = fold.utils.loadObjectDynamically(name)
+        self.assertEqual(expected, result)
+
+    def testFromPathlibImportPath(self):
+        from pathlib import Path as expected
+
+        name = "pathlib:Path"
+        result = fold.utils.loadObjectDynamically(name)
+        self.assertEqual(expected, result)
+
+    def testFromJSONImportDecoderJSONDecodeError(self):
+        from json.decoder import JSONDecodeError as expected
+
+        name = "json:decoder.JSONDecodeError"
+        result = fold.utils.loadObjectDynamically(name)
+        self.assertEqual(expected, result)

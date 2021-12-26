@@ -36,7 +36,7 @@ class PluginManager:
         """Dynamically load a module and import a plugin
 
         Args:
-            name (str): Path to object in <module>/<object> notation
+            name (str): Path to object in <module>:<object> notation
             package (str, optional): Required only if the module name is relative. Defaults to None.
             cache (bool, optional): Use cache result. Defaults to True.
 
