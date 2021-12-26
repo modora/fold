@@ -80,7 +80,7 @@ class TestModuleObjectStringParser(unittest.TestCase):
 
     def testDotModuleDot(self):
         string = ".module."
-        expected = ("module", None)
+        expected = (".module", None)
 
         self._test(string, expected)
 
