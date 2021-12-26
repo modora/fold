@@ -23,7 +23,7 @@ class PluginManager:
         self._cache: Dict[str, Plugin] = {}
 
     @property
-    def cache(self) -> Plugin:
+    def cache(self) -> Dict[str, Plugin]:
         return self._cache
 
     def flushCache(self):
