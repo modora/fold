@@ -11,19 +11,63 @@ class TestModuleObjectStringParser(unittest.TestCase):
     def _testRaises(self, exception, string):
         self.assertRaises(exception, fold.utils.parseModuleObjectString, string)
 
-    def testSysStdout(self):
-        string = "sys/stdout"
-        expected = ("sys", "stdout")
+    def testModule(self):
+        string = "module"
+        expected = ("module", None)
 
         self._test(string, expected)
 
-    def testOSPathAbspath(self):
-        string = "os.path/abspath"
-        expected = ("os.path", "abspath")
+    def testModuleSubmodule(self):
+        string = "module.submodule"
+        expected = ("module.submodule", None)
 
         self._test(string, expected)
 
-    def testTyping(self):
-        """This test should fail since no object is present"""
-        string = "typing"
-        self._testRaises(ValueError, string)
+    def testModuleSubmodule(self):
+        string = "module.submodule"
+        expected = ("module.submodule", None)
+
+        self._test(string, expected)
+
+    def testModuleObject(self):
+        string = "module:object"
+        expected = ("module", "object")
+
+        self._test(string, expected)
+
+    def testModuleSubmoduleObject(self):
+        string = "module.submodule:object"
+        expected = ("module.submodule", "object")
+
+        self._test(string, expected)
+
+    def testModuleObjectAttr(self):
+        string = "module:object.attr"
+        expected = ("module", "object.attr")
+
+        self._test(string, expected)
+
+    def testModuleSubmoduleObjectAttr(self):
+        string = "module.submodule:object.attr"
+        expected = ("module.submodule", "object.attr")
+
+        self._test(string, expected)
+
+    def testColonModule(self):
+        string = ":module"
+        expected = ValueError
+
+        self._testRaises(expected, string)
+
+    def testObjectNotDefined(self):
+        string = "module:"
+        expected = ("module", None)
+
+        self._test(string, expected)
+
+    def testRelativeModule(self):
+        """We are allowing relative imports"""
+        string = ".module"
+        expected = (".module", None)
+
+        self._test(string, expected)

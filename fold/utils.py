@@ -4,7 +4,7 @@ import importlib
 
 
 def parseModuleObjectString(string: str) -> Tuple[str, str]:
-    """Parse a string using the notation <module>/<object>
+    """Parse a string using the notation <module>:<object>
 
     Args:
         string (str): String to parse
@@ -17,10 +17,9 @@ def parseModuleObjectString(string: str) -> Tuple[str, str]:
 
     """
 
-    # We split the name at each "." and the final element is the object name, everything prior is the module name.
     # I am choosing to implement using regex over str.split because regex handles character checks
 
-    pattern = r"([\w\.]+)\/(\w+)"
+    pattern = "^([\w\.]+):?([\w\.]+)?"
     if not (match := re.match(pattern, string)):
         raise ValueError(f"Unable to parse string {string}")
 
