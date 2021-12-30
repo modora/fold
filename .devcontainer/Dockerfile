@@ -25,5 +25,10 @@ RUN if [ "$ENV" = "dev" ]; then \
    pip3 --disable-pip-version-check --no-cache-dir install -r /tmp/pip-tmp/dev-requirements.txt ; \
    fi
 
+# Mount VSCode extensions as a volume
+RUN mkdir -p /home/vscode/.vscode-server/extensions \
+    && chown -R vscode \
+        /home/vscode/.vscode-server \
+
 # [Optional] Uncomment this line to install global node packages.
 # RUN su vscode -c "source /usr/local/share/nvm/nvm.sh && npm install -g <your-package-here>" 2>&1
