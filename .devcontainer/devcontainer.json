@@ -11,9 +11,11 @@
 			// Use -bullseye variants on local on arm64/Apple Silicon.
 			"VARIANT": "3.10",
 			// Options
-			"NODE_VERSION": "none"
+			"NODE_VERSION": "none",
+			"ENV": "dev"
 		}
 	},
+	"containerEnv": {},
 	// Set *default* container specific settings.json values on container create.
 	"settings": {
 		"python.defaultInterpreterPath": "/usr/local/bin/python",
@@ -38,7 +40,7 @@
 	// Use 'forwardPorts' to make a list of ports inside the container available locally.
 	// "forwardPorts": [],
 	// Use 'postCreateCommand' to run commands after the container is created.
-	"postCreateCommand": "pip3 install --user -r .devcontainer/requirements.txt",
+	// "postCreateCommand": "pip3 install --user -r .devcontainer/requirements.txt",
 	// Comment out connect as root instead. More info: https://aka.ms/vscode-remote/containers/non-root.
 	"remoteUser": "vscode"
 }
