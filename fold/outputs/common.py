@@ -1,11 +1,10 @@
-from typing import Any, Iterable, Set, TypedDict, Optional, List, Dict
+from typing import TYPE_CHECKING, Any, Set, TypedDict, List, Dict
 import abc
-from build.lib.fold.core.plugin import PluginManager
 
-from fold.core import Plugin
-from fold.config import Config
-from fold.core.plugin import Manager
-from fold.utils import parseModuleObjectString
+from fold.core import Plugin, PluginManager, Manager
+
+if TYPE_CHECKING:
+    from fold.config import Config
 
 
 class OutputHandlerConfig(TypedDict):
