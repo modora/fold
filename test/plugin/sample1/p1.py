@@ -1,4 +1,4 @@
-from fold.plugin import Plugin
+from fold.core import Plugin
 
 
 class P1(Plugin):

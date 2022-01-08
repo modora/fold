@@ -1,17 +1,18 @@
-from typing import Any, Iterable, Optional, Dict, List
-from abc import ABC, abstractmethod
+from __future__ import annotations
+from typing import Iterable, Optional, Dict, List, Set
+from abc import abstractmethod
 from pathlib import Path
 
-from fold.plugin import Plugin, PluginManager
+from fold.core import Plugin, PluginManager
 
-Content = str | int | float | List["Content"] | Dict[str, "Content"]
+Content = str | int | float | bool | List["Content"] | Dict[str, "Content"]
 
 
 class ConfigError(Exception):
     pass
 
 
-class ConfigFileParser(ABC, Plugin):
+class ConfigFilePlugin(Plugin):
     EXTENSIONS: Iterable[str] = set()
 
     @classmethod
@@ -20,78 +21,72 @@ class ConfigFileParser(ABC, Plugin):
         pass
 
 
-class ConfigSectionParser(ABC, Plugin):
-    def __init__(self, content: Content) -> None:
-        self.content = content
+class Config:
+    @classmethod
+    @property
+    def DEFAULT_PARSERS(cls) -> Set[ConfigFilePlugin]:
+        return PluginManager(ConfigFilePlugin).discover("fold.config")
 
-    @abstractmethod
-    def parse(self, *args, **kwargs) -> Any:
+    def __init__(self, config: Dict[str, Content]) -> None:
         pass
 
-
-class ConfigManager(Plugin):
-    def __init__(
-        self,
-        sections: Iterable[ConfigSectionParser],
-        parsers: Optional[Iterable[ConfigFileParser]] = None,
-    ) -> None:
-        self.sections = {section.name: section for section in sections}
-        self.parsers = parsers or set()
-
-    def _parseContent(self, content: Dict[str, Content]) -> Dict[str, Content]:
-        parsedContent: Dict[str, Content] = {}
-        for sectionName, sectionContent in content.items():
-            parsedContent[sectionName] = self.sections[sectionName](
-                sectionContent
-            ).parse()
-        return parsedContent
-
+    @classmethod
     def fromText(
-        self, text: str, parser: Optional[ConfigFileParser] = None
-    ) -> Dict[str, Content]:
-        if parser:
-            content = parser.fromText(text)
+        cls, text: str, parsers: Optional[Iterable[ConfigFilePlugin]] = None
+    ) -> Config:
+        """Parse a config as a single string
 
-            return self._parseContent(content)
+        Args:
+            text (str): config
+            parsers (Iterable[ConfigFile], None): File parsers to use, default to fold.config
 
-        # The parser is not defined, brute force the parsers.
-        for parser in self.parsers:
+        Raises:
+            ConfigError: None of the parsers worked
+
+        Returns:
+            Config: [description]
+        """
+        # If the parsers are not defined, then discover the parsers first.
+        if parsers is None:
+            parsers = cls.DEFAULT_PARSERS
+
+        # Brute force all parsers defined
+        for parser in parsers:
             try:
-                return self.fromText(text, parser)
+                config = parser.fromText(text)
+                break
             except Exception:
                 pass
-        raise ConfigError(f"Unable to parse {text}")
+        else:
+            # None of them worked...
+            raise ConfigError(f"Failed to parse {text}")
+        return Config(config)
 
+    @classmethod
     def fromPath(
-        self, path: str | Path, parser: Optional[ConfigFileParser] = None
-    ) -> Dict[str, Content]:
-        path = Path(path).resolve()  # convert to Path
+        cls, path: Path, parsers: Optional[Iterable[ConfigFilePlugin]] = None
+    ) -> Config:
+        # If the parsers are not defined, then discover the parsers first.
+        if parsers is None:
+            parsers = cls.DEFAULT_PARSERS
 
-        # Get the contents of the file and pass to the parser
         with open(path, "r", encoding="UTF-8") as file:
             text = file.read()
-        if parser:
-            return self.fromText(text, parser)
 
-        # If the parser is not defined, then discover the parser first. Discovery is attempted using the file extension.
-        # If that doesn't work, brute force the remaining parsers.
-        parsers = set(self.parsers)
+        # Try to parse based off the file extension
+        ext = path.suffix.lower()
+        extParsers = {
+            parser
+            for parser in parsers
+            if ext in {ext.lower() for ext in parser.EXTENSIONS}
+        }
+        try:
+            return cls.fromText(text, extParsers)
+        except ConfigError:  # ext parsers failed
+            parsers = parsers - extParsers
 
-        # Try discovering the parser based off the file extension
-        ext = path.suffix
-        for parser in parsers:
-            if ext.lower() in [ext.lower() for ext in parser.EXTENSIONS]:
-                try:
-                    return self.fromText(text, parser)
-                except Exception:
-                    pass
-            parsers.remove(parser)
-
-        # Brute force all remaining parsers
-        for parser in parsers:
-            try:
-                return self.fromText(text, parser)
-            except Exception:
-                pass
-
-        raise ConfigError(f"Unable to parse {path}")
+        # Just brute force the remaining parsers
+        try:
+            return cls.fromText(text, parsers)
+        except ConfigError as e:
+            raise ConfigError(f"Failed to parse {path}") from e

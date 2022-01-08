@@ -6,7 +6,7 @@ import fold.config
 class TestTOMLConfigParser(unittest.TestCase):
     @classmethod
     def setUpClass(cls) -> None:
-        cls.parser = fold.config.TOMLConfigParser
+        cls.parser = fold.config.TOMLConfig
 
     def _test(self, content: str, expected: dict):
         actual = self.parser.fromText(content)
@@ -143,7 +143,7 @@ class TestTOMLConfigParser(unittest.TestCase):
 class TestJSONConfigParser(unittest.TestCase):
     @classmethod
     def setUpClass(cls) -> None:
-        cls.parser = fold.config.JSONConfigParser
+        cls.parser = fold.config.JSONConfig
 
     def _test(self, content: str, expected: dict):
         actual = self.parser.fromText(content)

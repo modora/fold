@@ -1,9 +1,8 @@
 from .common import (
     Content,
     ConfigError,
-    ConfigSectionParser,
-    ConfigFileParser,
-    ConfigManager,
+    ConfigFilePlugin,
+    Config,
 )
-from .toml import TOMLConfigParser
-from .json import JSONConfigParser
+from .toml import TOMLConfig
+from .json import JSONConfig

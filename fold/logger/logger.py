@@ -1,6 +1,7 @@
 from typing import (
     Any,
     List,
+    Dict,
     TypedDict,
     Optional,
     IO,
@@ -13,12 +14,13 @@ from functools import partial
 import sys
 
 from functional import seq
+from loguru import logger
 
+from fold.core import Manager
+from fold.config import Content
 from fold.utils import loadObjectDynamically
-from fold.config import ConfigSectionParser
 
 class RawLogHandlerConfig(TypedDict):
-    sink: str
     level: Optional[int | str]
     format: Optional[str]
     filter: Optional[str | dict]
@@ -34,6 +36,7 @@ class RawLogHandlerConfig(TypedDict):
     custom_format: Optional[str]  # required if format == "custom"
     custom_filter: Optional[str]  # required if filter == "custom"
 
+RawLogConfig = List[RawLogHandlerConfig]
 
 ParsedSink = str | IO | Path | Callable | Coroutine | Handler
 ParsedFormat = Optional[str | Callable]
@@ -53,6 +56,7 @@ class ParsedLogHandlerConfig(TypedDict):
     catch: Optional[bool]
     kwargs: Optional[dict]
 
+ParsedLogConfig = List[ParsedLogHandlerConfig]
 
 class LogHandler:
     @classmethod
@@ -195,12 +199,14 @@ class LogHandler:
             case _:
                 return filter
 
-
-class LogConfigSectionParser(ConfigSectionParser):
+class LogManager(Manager):
     NAME = "log"
-
-    def __init__(self, content: List[RawLogHandlerConfig]) -> None:
-        super().__init__(content)
-
-    def parse(self) -> List[ParsedLogHandlerConfig]:
-        return [LogHandler.parseConfig(handler) for handler in self.content]
+    
+    def __init__(self, config: Dict[str, Content]) -> None:
+        logConfig = config["log"]
+        for handlerConfig in logConfig:
+            logger.add(**handlerConfig)
+    
+    @classmethod
+    def parseConfig(cls, config: RawLogConfig) -> ParsedLogConfig:
+        return [LogHandler.parseConfig(handerConfig) for handerConfig in config]

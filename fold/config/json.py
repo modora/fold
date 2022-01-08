@@ -1,11 +1,12 @@
+from typing import Dict
 import json
 
-from .common import ConfigFileParser, Content
+from .common import ConfigFilePlugin, Content
 
 
-class JSONConfigParser(ConfigFileParser):
+class JSONConfig(ConfigFilePlugin):
     EXTENSIONS = {"json"}
 
     @classmethod
-    def fromText(cls, text: str) -> Content:
+    def fromText(cls, text: str) -> Dict[str, Content]:
         return json.loads(text)

@@ -1,6 +1,6 @@
 import unittest
 
-from fold.plugin import Plugin, PluginManager
+from fold.core import Plugin, PluginManager
 
 
 class TestPlugin(unittest.TestCase):

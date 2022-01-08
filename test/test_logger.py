@@ -5,13 +5,13 @@ from pathlib import Path
 import fold.logger
 
 
-class TestLogConfigSectionParser(unittest.TestCase):
+class TestLogConfig(unittest.TestCase):
     @classmethod
     def setUpClass(cls) -> None:
-        cls.parser = fold.logger.LogConfigSectionParser
+        cls.parser = fold.logger.LogManager.parseConfig
 
     def _test(self, content, expected):
-        actual = self.parser(content).parse()
+        actual = self.parser(content)
 
         self.assertListEqual(actual, expected)
 

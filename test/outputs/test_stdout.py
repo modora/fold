@@ -2,35 +2,47 @@ import unittest
 from unittest.mock import patch
 from io import StringIO
 
-from fold.output.stdout import StdoutOutputPlugin
+from fold.outputs.stdout import StdoutOutputPlugin, StdoutHandlerConfig
 
 
 class TestStdoutParser(unittest.TestCase):
+    @classmethod
+    def setUpClass(cls) -> None:
+        cls.parser = StdoutOutputPlugin.parseConfig
+
     def _test(self, expected, config):
-        result = StdoutOutputPlugin.parseConfig(config)
-        self.assertEqual(expected, result)
+        # EAFP
+        try:
+            issubclass(expected, Exception)
+        except TypeError:
+            result = self.parser(config)
+            self.assertEqual(expected, result)
+        else:
+            self.assertRaises(expected, self.parser, config)
 
-    def testNullConfig(self):
-        config = None
-        expected = None
+    def testMinConfig(self):
+        config = StdoutHandlerConfig(name="test")
+        expected = {"name": "test"}
         self._test(expected, config)
 
-    def testEmptyDictConfig(self):
+    def testExtraKeys(self):
+        """It should preserve the keys"""
+        config = StdoutHandlerConfig(name="test")
+        config = {**config, **{"foo": "bar"}}
+        expected = {"name": "test", "foo": "bar"}
+        self._test(expected, config)
+
+    def testMissingKeys(self):
+        """It should raise a KeyError"""
         config = {}
-        expected = None
-        self._test(expected, config)
-
-    def testNonEmptyConfig(self):
-        """It should ignore the config and return None"""
-        config = {"foo": "bar", "hello": 123}
-        expected = None
+        expected = KeyError
         self._test(expected, config)
 
 
 class TestStdoutWrite(unittest.TestCase):
     def _test(self, expected, data):
         with patch("sys.stdout", StringIO()) as stdout:
-            StdoutOutputPlugin(None).write(data)
+            StdoutOutputPlugin().write(data)
             result = stdout.getvalue()
             self.assertEqual(expected, result)
 
