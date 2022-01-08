@@ -202,8 +202,6 @@ class LogHandler:
                 return filter
 
 class LogManager(Manager):
-    NAME = "log"
-    
     def __init__(self, config: Config) -> None:
         logConfig = config["log"]
         for handlerConfig in logConfig:
