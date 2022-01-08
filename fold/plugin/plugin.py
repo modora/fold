@@ -105,25 +105,23 @@ class PluginManager:
 
         # import from the importer cache
         if cache and name in self.cache:
-            objects: Set[Any] = self.cache[name]
+            module = self.cache[name]
         else:  # cache missed or disabled
-            m = importlib.import_module(name, package)
-
-            # Check non-private objects whether they are Plugin objects
-            objects: Set[Any] = {
-                obj
-                for obj in [
-                    getattr(m, name) for name in dir(m) if not name.startswith("_")
-                ]
-            }
-
+            module = importlib.import_module(name, package)
             # update cache
             if cache:
-                self.cache[name] = objects
+                self.cache[name] = module
 
-        # return only plugin objects, ommitting the plugin class itself
-        return {
-            obj
-            for obj in objects
-            if issubclass(obj, self._plugin) and obj is not self._plugin
-        }
+        # return only non-private plugin objects, ommitting the plugin class itself
+        plugins = set()
+        for object in [getattr(module, name) for name in dir(module)]:
+            try:
+                if (
+                    issubclass(object, self._plugin)
+                    and object is not self._plugin
+                    and not object.__name__.startswith("_")
+                ):
+                    plugins.add(object)
+            except TypeError:
+                pass
+        return plugins
