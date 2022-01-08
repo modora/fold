@@ -4,7 +4,7 @@ from abc import abstractmethod
 from pathlib import Path
 from collections import UserDict
 
-from fold.core import Plugin, PluginManager
+from fold.plugin import Plugin, PluginManager
 
 Content = str | int | float | bool | List["Content"] | Dict[str, "Content"]
 

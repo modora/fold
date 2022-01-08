@@ -1,3 +1,4 @@
+from __future__ import annotations
 from typing import (
     TYPE_CHECKING,
     Any,
@@ -16,7 +17,7 @@ import sys
 from functional import seq
 from loguru import logger
 
-from fold.core import Manager
+from fold.plugin import Manager
 from fold.utils import loadObjectDynamically
 
 if TYPE_CHECKING:

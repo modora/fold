@@ -15,8 +15,8 @@ class Plugin(ABC):
     def __init__(self, config: Dict[str, Content], *args, **kwargs) -> None:
         super().__init__()
 
-    @abstractmethod
     @classmethod
+    @abstractmethod
     def parseConfig(cls, config: Content) -> Content:
         pass
 
@@ -42,20 +42,18 @@ class PluginManager:
         """
         self._plugin = obj
 
-    @classmethod
     @property
-    def cache(cls) -> Dict[str, Any]:
+    def cache(self) -> Dict[str, Any]:
         """Importer cache
 
         Returns:
             Dict[str, Any]: Import cache where the key is the import name and the value is the module/object
         """
-        return cls._cache
+        return self._cache
 
-    @classmethod
-    def flushCache(cls):
+    def flushCache(self):
         """Flush plugin cache"""
-        cls._cache = {}
+        self._cache = {}
 
     def load(
         self, name: str, package: Optional[str] = None, cache: bool = True
@@ -86,9 +84,10 @@ class PluginManager:
             if cache:
                 self._cache[name] = obj
 
-        if not isinstance(obj, self._plugin):
-            raise TypeError("Object is not a plugin")
-        return obj
+        # return only strict, subclass of Plugin
+        if issubclass(obj, self._plugin) and obj is not self._plugin:
+            return obj
+        raise TypeError("Object is not a plugin")
 
     def discover(
         self, name: str, package: Optional[str] = None, cache: bool = True

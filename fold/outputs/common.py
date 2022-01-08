@@ -1,7 +1,8 @@
+from __future__ import annotations
 from typing import TYPE_CHECKING, Any, Set, TypedDict, List, Dict
 from abc import abstractmethod
 
-from fold.core import Plugin, PluginManager, Manager
+from fold.plugin import Plugin, PluginManager, Manager
 
 if TYPE_CHECKING:
     from fold.config import Config

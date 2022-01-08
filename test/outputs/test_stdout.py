@@ -1,6 +1,7 @@
 import unittest
 from unittest.mock import patch
 from io import StringIO
+from fold import plugin
 
 from fold.outputs.stdout import Stdout, StdoutConfig
 
@@ -41,10 +42,12 @@ class TestStdoutParser(unittest.TestCase):
 
 class TestStdoutWrite(unittest.TestCase):
     def _test(self, expected, data):
+        config = StdoutConfig(name="stdout")
+        plugin = Stdout(config)
         with patch("sys.stdout", StringIO()) as stdout:
-            Stdout().write(data)
+            plugin.write(data)
             result = stdout.getvalue()
-            self.assertEqual(expected, result)
+        self.assertEqual(expected, result)
 
     def testEmptyString(self):
         data = ""
