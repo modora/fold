@@ -2,13 +2,13 @@ import unittest
 from unittest.mock import patch
 from io import StringIO
 
-from fold.outputs.stdout import StdoutOutputPlugin, StdoutHandlerConfig
+from fold.outputs.stdout import Stdout, StdoutConfig
 
 
 class TestStdoutParser(unittest.TestCase):
     @classmethod
     def setUpClass(cls) -> None:
-        cls.parser = StdoutOutputPlugin.parseConfig
+        cls.parser = Stdout.parseConfig
 
     def _test(self, expected, config):
         # EAFP
@@ -21,13 +21,13 @@ class TestStdoutParser(unittest.TestCase):
             self.assertRaises(expected, self.parser, config)
 
     def testMinConfig(self):
-        config = StdoutHandlerConfig(name="test")
+        config = StdoutConfig(name="test")
         expected = {"name": "test"}
         self._test(expected, config)
 
     def testExtraKeys(self):
         """It should preserve the keys"""
-        config = StdoutHandlerConfig(name="test")
+        config = StdoutConfig(name="test")
         config = {**config, **{"foo": "bar"}}
         expected = {"name": "test", "foo": "bar"}
         self._test(expected, config)
@@ -42,7 +42,7 @@ class TestStdoutParser(unittest.TestCase):
 class TestStdoutWrite(unittest.TestCase):
     def _test(self, expected, data):
         with patch("sys.stdout", StringIO()) as stdout:
-            StdoutOutputPlugin().write(data)
+            Stdout().write(data)
             result = stdout.getvalue()
             self.assertEqual(expected, result)
 

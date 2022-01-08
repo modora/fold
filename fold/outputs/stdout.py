@@ -4,16 +4,14 @@ import sys
 from .common import OutputPlugin, OutputHandlerConfig
 
 
-class StdoutHandlerConfig(OutputHandlerConfig):
+class StdoutConfig(OutputHandlerConfig):
     # It's stdout... there is no configuration.
     pass
 
 
-class StdoutOutputPlugin(OutputPlugin):
-    NAME = "stdout"
-
+class Stdout(OutputPlugin):
     @classmethod
-    def parseConfig(cls, config: StdoutHandlerConfig) -> StdoutHandlerConfig:
+    def parseConfig(cls, config: StdoutConfig) -> StdoutConfig:
         parsedConfig = config.copy()
         return parsedConfig
 

@@ -1,5 +1,5 @@
 from typing import TYPE_CHECKING, Any, Set, TypedDict, List, Dict
-import abc
+from abc import abstractmethod
 
 from fold.core import Plugin, PluginManager, Manager
 
@@ -18,7 +18,12 @@ class OutputPlugin(Plugin):
     def __init__(self, config: Config, *args, **kwargs) -> None:
         pass
 
-    @abc.abstractmethod
+    @classmethod
+    @property
+    def name(cls) -> str:
+        return cls.__name__
+
+    @abstractmethod
     def write(self, data: Any):
         """Write data to output
 
@@ -29,8 +34,6 @@ class OutputPlugin(Plugin):
 
 
 class OutputManager(Manager):
-    NAME = "output"
-
     def __init__(self, config: Config, *args, **kwargs) -> None:
         outputConfig = config["output"]
         self.handlers: Set[OutputPlugin] = set()
