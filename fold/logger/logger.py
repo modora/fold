@@ -1,7 +1,7 @@
 from typing import (
+    TYPE_CHECKING,
     Any,
     List,
-    Dict,
     TypedDict,
     Optional,
     IO,
@@ -17,8 +17,10 @@ from functional import seq
 from loguru import logger
 
 from fold.core import Manager
-from fold.config import Content
 from fold.utils import loadObjectDynamically
+
+if TYPE_CHECKING:
+    from fold.config import Config
 
 class RawLogHandlerConfig(TypedDict):
     level: Optional[int | str]
@@ -202,7 +204,7 @@ class LogHandler:
 class LogManager(Manager):
     NAME = "log"
     
-    def __init__(self, config: Dict[str, Content]) -> None:
+    def __init__(self, config: Config) -> None:
         logConfig = config["log"]
         for handlerConfig in logConfig:
             logger.add(**handlerConfig)

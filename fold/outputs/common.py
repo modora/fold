@@ -3,7 +3,7 @@ import abc
 from build.lib.fold.core.plugin import PluginManager
 
 from fold.core import Plugin
-from fold.config import Content
+from fold.config import Config
 from fold.core.plugin import Manager
 from fold.utils import parseModuleObjectString
 
@@ -16,7 +16,7 @@ OutputConfig = List[OutputHandlerConfig]
 
 
 class OutputPlugin(Plugin):
-    def __init__(self, config: Dict[str, Content], *args, **kwargs) -> None:
+    def __init__(self, config: Config, *args, **kwargs) -> None:
         pass
 
     @abc.abstractmethod
@@ -32,7 +32,7 @@ class OutputPlugin(Plugin):
 class OutputManager(Manager):
     NAME = "output"
 
-    def __init__(self, config: Dict[str, Content], *args, **kwargs) -> None:
+    def __init__(self, config: Config, *args, **kwargs) -> None:
         outputConfig = config["output"]
         self.handlers: Set[OutputPlugin] = set()
         plugins = self.DEFAULT_PLUGINS

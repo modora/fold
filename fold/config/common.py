@@ -2,6 +2,7 @@ from __future__ import annotations
 from typing import Iterable, Optional, Dict, List, Set
 from abc import abstractmethod
 from pathlib import Path
+from collections import UserDict
 
 from fold.core import Plugin, PluginManager
 
@@ -21,14 +22,11 @@ class ConfigFilePlugin(Plugin):
         pass
 
 
-class Config:
+class Config(UserDict):
     @classmethod
     @property
     def DEFAULT_PARSERS(cls) -> Set[ConfigFilePlugin]:
         return PluginManager(ConfigFilePlugin).discover("fold.config")
-
-    def __init__(self, config: Dict[str, Content]) -> None:
-        pass
 
     @classmethod
     def fromText(
@@ -44,7 +42,7 @@ class Config:
             ConfigError: None of the parsers worked
 
         Returns:
-            Config: [description]
+            Config: config object
         """
         # If the parsers are not defined, then discover the parsers first.
         if parsers is None:
