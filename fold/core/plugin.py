@@ -15,20 +15,13 @@ class Plugin(ABC):
     def __init__(self, config: Dict[str, Content], *args, **kwargs) -> None:
         super().__init__()
 
-    @classmethod
-    @property
-    def name(cls) -> str:
-        return cls.NAME or cls.__name__
-
-    @classmethod
     @abstractmethod
+    @classmethod
     def parseConfig(cls, config: Content) -> Content:
         pass
 
 
 class Manager(ABC):
-    NAME: str  # section name
-
     def __init__(self, config: Dict[str, Content], *args, **kwargs) -> None:
         pass
 
