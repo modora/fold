@@ -1,4 +1,5 @@
 from __future__ import annotations
+from types import NoneType
 from typing import Iterable, Optional, Dict, List, Set
 from abc import abstractmethod
 from pathlib import Path
@@ -6,7 +7,7 @@ from collections import UserDict
 
 from fold.plugin import Plugin, PluginManager
 
-Content = str | int | float | bool | List["Content"] | Dict[str, "Content"]
+Content = str | int | float | bool | NoneType | List["Content"] | Dict[str, "Content"]
 
 
 class ConfigError(Exception):

@@ -10,24 +10,12 @@ from fold.utils import loadObjectDynamically
 
 
 class Plugin(ABC):
-    NAME: Optional[str] = None
-
-    def __init__(self, config: Dict[str, Content], *args, **kwargs) -> None:
-        super().__init__()
-
-    @classmethod
-    @abstractmethod
-    def parseConfig(cls, config: Content) -> Content:
-        pass
-
-
-class Manager(ABC):
-    def __init__(self, config: Dict[str, Content], *args, **kwargs) -> None:
+    def __init__(self, config: Content, *args, **kwargs) -> None:
         pass
 
     @classmethod
     @abstractmethod
-    def parseConfig(cls, config: Content):
+    def parseConfig(cls, config: Content, *args, **kwargs) -> Content:
         pass
 
 

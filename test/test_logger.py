@@ -2,61 +2,48 @@ import unittest
 import sys
 from pathlib import Path
 
-import fold.logger
+from pydantic import ValidationError
+
+from fold.logger.logger import LogHandlerConfig
 
 
 class TestLogConfig(unittest.TestCase):
-    @classmethod
-    def setUpClass(cls) -> None:
-        cls.parser = fold.logger.LogManager.parseConfig
+    def _test(self, expected: dict, content: dict):
+        actual = LogHandlerConfig(**content).dict()
 
-    def _test(self, content, expected):
-        actual = self.parser(content)
+        # remove the optional keys
+        actual = {k: v for k, v in actual.items() if v is not None}
 
-        self.assertListEqual(actual, expected)
+        self.assertDictEqual(actual, expected)
 
-    def testStdoutSink(self):
-        content = [{"sink": "stdout"}]
-        expected = [{"sink": sys.stdout}]
-
-        self._test(content, expected)
-
-    # Is there more than one stderr? Importing stderr across modules seems to create a new memory address.
-    # Disabling the test for now
-    @unittest.skip("<Issue reference here>")
-    def testStderrSink(self):
-        content = [{"sink": "stdout"}]
-        expected = [{"sink": sys.stderr}]
-
-        self._test(content, expected)
-
-    def testStdinSink(self):
-        content = [{"sink": "stdin"}]
-        expected = [{"sink": Path("stdin")}]
-
-        self._test(content, expected)
+    def _testRaises(self, expected: Exception, content: dict):
+        self.assertRaises(expected, LogHandlerConfig, **content)
 
     def testFooSink(self):
-        content = [{"sink": "foo"}]
-        expected = [{"sink": Path("foo")}]
+        content = {"sink": "foo"}
+        expected = {"sink": Path("foo")}
 
-        self._test(content, expected)
+        self._test(expected, content)
 
-    def testFooBarSinks(self):
-        content = [{"sink": "foo"}, {"sink": "bar"}]
-        expected = [{"sink": Path("foo")}, {"sink": Path("bar")}]
+    def testBarPathSink(self):
+        content = {"sink": Path("bar")}
+        expected = {"sink": Path("bar")}
 
-        self._test(content, expected)
+        self._test(expected, content)
 
-    def testMultipleOptions(self):
-        content = [{"sink": "stdout", "colorize": False}]
-        expected = [{"sink": sys.stdout, "colorize": False}]
+    def testStdoutSink(self):
+        content = {"sink": "custom", "custom_sink": "sys:stdout"}
+        expected = {"sink": sys.stdout}
 
-        self._test(content, expected)
+        self._test(expected, content)
+
+    def testStderrSink(self):
+        content = {"sink": "stderr"}
+        expected = {"sink": sys.stderr}
+
+        self._test(expected, content)
 
     def testUnknownKeyError(self):
-        content = [{"foo": False}]
+        content = {"foo": False}
 
-        self.assertRaises(
-            KeyError, lambda content: self.parser(content).parse(), content
-        )
+        self._testRaises(ValidationError, content)

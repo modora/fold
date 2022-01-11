@@ -1,7 +1,4 @@
-# core
+pydantic
 loguru
-
-# optionals
-pyfunctional
 toml
 pyyaml

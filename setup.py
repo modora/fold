@@ -6,8 +6,8 @@ setup(
     python_requires=">=3.10",
     packages=["fold.plugin", "fold.config", "fold.logger", "fold.outputs"],
     install_requires=[
+        "pydantic",
         "loguru",
-        "pyfunctional",
         "toml",
         "pyyaml",
     ],

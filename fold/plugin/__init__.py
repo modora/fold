@@ -1,1 +1,1 @@
-from .plugin import Plugin, PluginManager, Manager
+from .plugin import Plugin, PluginManager
