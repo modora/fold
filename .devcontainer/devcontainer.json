@@ -35,12 +35,13 @@
 	"extensions": [
 		"ms-python.python",
 		"donjayamanne.python-extension-pack",
-		"eamodio.gitlens"
+		"eamodio.gitlens",
+		"be5invis.toml"
 	],
 	// Use 'forwardPorts' to make a list of ports inside the container available locally.
 	// "forwardPorts": [],
 	// Use 'postCreateCommand' to run commands after the container is created.
-	// "postCreateCommand": "pip3 install --user -r .devcontainer/requirements.txt",
+	"postCreateCommand": "poetry install",
 	// Comment out connect as root instead. More info: https://aka.ms/vscode-remote/containers/non-root.
 	"remoteUser": "vscode",
 	"mounts": [

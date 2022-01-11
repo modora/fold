@@ -1,4 +1,0 @@
-pydantic
-loguru
-toml
-pyyaml

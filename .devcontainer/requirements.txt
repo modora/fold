@@ -1,4 +1,0 @@
-# dev requirements
-black
-coverage
-mypy

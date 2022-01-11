@@ -36,7 +36,7 @@ class TestPluginManagerLoader(unittest.TestCase):
         self.manager._cache = {}
 
     def testLoader(self):
-        from test.sample_plugins.p1 import P1
+        from tests.sample_plugins.p1 import P1
 
         path = "test.sample_plugins.p1:P1"
         obj = self.manager.load(path, cache=False)
@@ -55,7 +55,7 @@ class TestPluginManagerLoader(unittest.TestCase):
         self.assertEqual(Bar, obj)
 
     def testCacheWrite(self):
-        from test.sample_plugins.p1 import P1
+        from tests.sample_plugins.p1 import P1
 
         path = "test.sample_plugins.p1:P1"
         self.manager.load(path, cache=True)
@@ -75,7 +75,7 @@ class TestPluginManagerDiscovery(unittest.TestCase):
         self.manager._cache = {}
 
     def testDiscoverMethod(self):
-        from test.sample_plugins import P1, P2
+        from tests.sample_plugins import P1, P2
 
         expected = {P1, P2}
         path = "test.sample_plugins"
@@ -100,9 +100,9 @@ class TestPluginManagerDiscovery(unittest.TestCase):
         self.assertSetEqual(expected, plugins)
 
     def testCacheWrite(self):
-        import test.sample_plugins
+        import tests.sample_plugins
 
         path = "test.sample_plugins"
         self.manager.discover(path, cache=True)
-        expected = {path: test.sample_plugins}
+        expected = {path: tests.sample_plugins}
         self.assertDictEqual(expected, self.manager.cache)
