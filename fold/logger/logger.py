@@ -30,7 +30,6 @@ class LogHandlerConfig(BaseModel):
     diagnose: Optional[bool]
     enqueue: Optional[bool]
     catch: Optional[bool]
-    kwargs: Optional[dict]
     # Custom objects will be dynamically loaded and override the key-value pair
     custom_sink: Optional[str] = Field(
         default=None,
@@ -45,7 +44,7 @@ class LogHandlerConfig(BaseModel):
 
     class Config:
         arbitrary_types_allowed = True
-        extra = 'forbid'
+        extra = 'allow'
 
     @root_validator(pre=True)
     def import_custom_fields(cls, values):
