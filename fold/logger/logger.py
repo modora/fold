@@ -87,9 +87,9 @@ class LogHandlerConfig(BaseModel):
 
 
 class LogManager(Plugin):
-    def __init__(self, config: LogHandlerConfig, *args, **kwargs) -> None:
-        for handlerConfig in self.parseConfig(config):
-            logger.add(**handlerConfig)
+    def __init__(self, config: List[LogHandlerConfig], *args, **kwargs) -> None:
+        for handlerConfig in config:
+            logger.add(**handlerConfig.dict())
 
     @classmethod
     def parseConfig(cls, config: Content, *args, **kwargs) -> List[LogHandlerConfig]:
