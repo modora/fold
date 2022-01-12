@@ -38,7 +38,7 @@ class TestPluginManagerLoader(unittest.TestCase):
     def testLoader(self):
         from tests.sample_plugins.p1 import P1
 
-        path = "test.sample_plugins.p1:P1"
+        path = "tests.sample_plugins.p1:P1"
         obj = self.manager.load(path, cache=False)
 
         self.assertEqual(P1, obj)
@@ -49,7 +49,7 @@ class TestPluginManagerLoader(unittest.TestCase):
             def parseConfig(cls, config: Content) -> Content:
                 return super().parseConfig(config)
 
-        path = "test.nonexistentpath:foo"
+        path = "tests.nonexistentpath:foo"
         self.manager._cache = {path: Bar}
         obj = self.manager.load(path, cache=True)
         self.assertEqual(Bar, obj)
@@ -57,7 +57,7 @@ class TestPluginManagerLoader(unittest.TestCase):
     def testCacheWrite(self):
         from tests.sample_plugins.p1 import P1
 
-        path = "test.sample_plugins.p1:P1"
+        path = "tests.sample_plugins.p1:P1"
         self.manager.load(path, cache=True)
 
         expected = {path: P1}
@@ -78,7 +78,7 @@ class TestPluginManagerDiscovery(unittest.TestCase):
         from tests.sample_plugins import P1, P2
 
         expected = {P1, P2}
-        path = "test.sample_plugins"
+        path = "tests.sample_plugins"
         plugins = self.manager.discover(path, cache=False)
         self.assertSetEqual(expected, plugins)
 
@@ -102,7 +102,7 @@ class TestPluginManagerDiscovery(unittest.TestCase):
     def testCacheWrite(self):
         import tests.sample_plugins
 
-        path = "test.sample_plugins"
+        path = "tests.sample_plugins"
         self.manager.discover(path, cache=True)
         expected = {path: tests.sample_plugins}
         self.assertDictEqual(expected, self.manager.cache)

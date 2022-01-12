@@ -10,6 +10,11 @@ RUN if [ "${NODE_VERSION}" != "none" ]; then su vscode -c "umask 0002 && . /usr/
 
 # Install poetry
 RUN pip3 --disable-pip-version-check --no-cache-dir install poetry
+# Install poetry plugins
+RUN pip3 --disable-pip-version-check --no-cache-dir install poethepoet
+
+# Enable poethepoet bash completion
+RUN poe _bash_completion > /etc/bash_completion.d/poe.bash-completion
 
 # [Optional] Uncomment this section to install additional OS packages.
 # RUN apt-get update && export DEBIAN_FRONTEND=noninteractive \
@@ -18,4 +23,4 @@ RUN pip3 --disable-pip-version-check --no-cache-dir install poetry
 # Mount VSCode extensions as a volume
 RUN mkdir -p /home/vscode/.vscode-server/extensions \
     && chown -R vscode \
-        /home/vscode/.vscode-server \
+    /home/vscode/.vscode-server \

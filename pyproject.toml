@@ -24,6 +24,23 @@ poethepoet = "^0.12.0"
 sphinx-rtd-theme = "^1.0.0"
 sphinxcontrib-napoleon = "^0.7"
 
+[tool.poe.tasks]
+test = "python -m unittest discover -s ./tests -p 'test*.py'"
+
+[tool.poe.tasks.coverage]
+cmd = "python -m coverage run --source=./fold -m unittest discover -s ./tests -p 'test*.py'"
+help = "Run the coverage test on the source code"
+
+[tool.poe.tasks.report]
+cmd = "python -m coverage report"
+deps = ["coverage"]
+help = "Generate coverage report"
+
+[tool.poe.tasks.html]
+cmd = "python -m coverage html"
+deps = ["coverage"]
+help = "Generate coverage html"
+
 [build-system]
 build-backend = "poetry.core.masonry.api"
 requires = ["poetry-core>=1.0.0"]
