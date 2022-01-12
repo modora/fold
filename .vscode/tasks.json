@@ -6,7 +6,7 @@
         {
             "label": "coverage",
             "type": "shell",
-            "command": "python -m coverage run --source=./fold -m unittest discover -s ./test -p 'test*.py'",
+            "command": "python -m coverage run --source=./fold -m unittest discover -s ./tests -p 'test*.py'",
         },
         {
             "label": "coverage html",
