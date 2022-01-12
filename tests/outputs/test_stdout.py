@@ -18,7 +18,7 @@ class TestStdoutParser(unittest.TestCase):
         try:
             issubclass(expected, Exception)
         except TypeError:
-            result = self.parser(config).dict()
+            result = self.parser(config).dict(exclude_none=True, exclude_unset=True)
             self.assertEqual(expected, result)
         else:
             self.assertRaises(expected, self.parser, config)

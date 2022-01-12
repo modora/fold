@@ -9,10 +9,7 @@ from fold.logger.logger import LogHandlerConfig
 
 class TestLogConfig(unittest.TestCase):
     def _test(self, expected: dict, content: dict):
-        actual = LogHandlerConfig(**content).dict()
-
-        # remove the optional keys
-        actual = {k: v for k, v in actual.items() if v is not None}
+        actual = LogHandlerConfig(**content).dict(exclude_none=True, exclude_unset=True)
 
         self.assertDictEqual(actual, expected)
 
