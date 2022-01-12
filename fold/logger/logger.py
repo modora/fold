@@ -87,8 +87,9 @@ class LogHandlerConfig(BaseModel):
 
 class LogManager(Plugin):
     def __init__(self, config: List[LogHandlerConfig], *args, **kwargs) -> None:
+        logger.remove()  # clear any existing handlers
         for handlerConfig in config:
-            logger.add(**handlerConfig.dict(exclude_none=True, exclude_unset=True)))
+            logger.add(**handlerConfig.dict(exclude_none=True, exclude_unset=True))
 
     @classmethod
     def parseConfig(cls, config: Content, *args, **kwargs) -> List[LogHandlerConfig]:
