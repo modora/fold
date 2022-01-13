@@ -39,8 +39,3 @@ class TestLogConfig(unittest.TestCase):
         expected = {"sink": sys.stderr}
 
         self._test(expected, content)
-
-    def testUnknownKeyError(self):
-        content = {"foo": False}
-
-        self._testRaises(ValidationError, content)
