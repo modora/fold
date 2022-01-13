@@ -1,6 +1,5 @@
-from typing import Tuple, Optional, Any, List
 import re
-import importlib
+from typing import Tuple, List
 
 
 def parseModuleObjectString(string: str) -> Tuple[str, str]:
@@ -14,6 +13,13 @@ def parseModuleObjectString(string: str) -> Tuple[str, str]:
 
     Returns:
         Tuple[str, str]: (module, object)
+
+    Examples:
+        pathlib:Path        <=> (pathlib, Path)
+        os.path:abspath     <=> (os.path, abspath)
+        .math:sqrt          <=> (.math, abspath)
+        abc:ABC.__name__    <=> (abc, ABC.__name__)
+
 
     """
 
@@ -44,37 +50,16 @@ def parseModuleObjectString(string: str) -> Tuple[str, str]:
     return (moduleName, objectName)
 
 
-def parseObjectString(string: str) -> Tuple[str, List[str]]:
+def parseObjectAttrString(string: str) -> Tuple[str, List[str]]:
+    """Parse an object-attribute string in the form <object>.<attr>
+
+    Args:
+        string (str): String in the form <object>.<attr>
+
+    Returns:
+        Tuple[str, List[str]]: (objectName, List[attrName])
+    """
     pattern = re.compile(r"\w+")
     matches = pattern.findall(string)
 
     return (matches[0], matches[1:])
-
-
-def loadObjectDynamically(name: str, package: Optional[str] = None) -> Any:
-    """Dynamically load a module or object
-
-    Args:
-        name (str): Path to object in <module>:<object> notation
-        package (str, optional): Required only if the module name is relative. Defaults to none.
-
-    Returns:
-        Any: Object loaded
-
-    Raises:
-        ImportError: Failed to load module
-        AttributeError: Object does not exist in module
-
-    """
-
-    moduleName, objectString = parseModuleObjectString(name)
-
-    m = importlib.import_module(moduleName, package)
-
-    if objectString is None:
-        return m
-    objectName, attrs = parseObjectString(objectString)
-    obj = getattr(m, objectName)
-    for attr in attrs:
-        obj = getattr(m, attr)
-    return obj
