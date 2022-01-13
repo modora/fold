@@ -31,15 +31,19 @@ test = "python -m unittest discover -s ./tests -p 'test*.py'"
 cmd = "python -m coverage run --source=./fold -m unittest discover -s ./tests -p 'test*.py'"
 help = "Run the coverage test on the source code"
 
-[tool.poe.tasks.report]
+[tool.poe.tasks.cov_report]
 cmd = "python -m coverage report"
 deps = ["coverage"]
 help = "Generate coverage report"
 
-[tool.poe.tasks.html]
+[tool.poe.tasks.cov_html]
 cmd = "python -m coverage html"
 deps = ["coverage"]
 help = "Generate coverage html"
+
+[tool.poe.tasks.docs_html]
+cmd = "make html"
+help = "Build the documentation"
 
 [build-system]
 build-backend = "poetry.core.masonry.api"
