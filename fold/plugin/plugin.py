@@ -6,7 +6,7 @@ import importlib
 if TYPE_CHECKING:
     from fold.config import Content
 
-from fold.utils import loadObjectDynamically
+from fold.utils import importFromString
 
 
 class Plugin(ABC):
@@ -65,7 +65,7 @@ class PluginManager:
             obj = self.cache[name]
         else:
             try:
-                obj = loadObjectDynamically(name, package)
+                obj = importFromString(name, package)
             except AttributeError as e:
                 raise ImportError("Plugin does not exist") from e
             # cache the result

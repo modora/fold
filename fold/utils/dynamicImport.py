@@ -3,8 +3,8 @@ import importlib
 from .modObjStr import parseModuleObjectString, parseObjectAttrString
 
 
-def loadObjectDynamically(name: str, package: Optional[str] = None) -> Any:
-    """Dynamically load a module or object
+def importFromString(name: str, package: Optional[str] = None) -> Any:
+    """Dynamically load a module or object in <module>:<object> notation
 
     Args:
         name (str): Path to object in <module>:<object> notation

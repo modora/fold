@@ -14,7 +14,7 @@ from pydantic import BaseModel, root_validator, validator, Field
 from loguru import logger
 
 from fold.plugin import Plugin
-from fold.utils import loadObjectDynamically
+from fold.utils import importFromString
 
 if TYPE_CHECKING:
     from fold.config import Content
@@ -54,7 +54,7 @@ class LogHandlerConfig(BaseModel):
             if value := values.get(field):
                 if value == "custom":
                     name = values[f"custom_{field}"]
-                    values[field] = loadObjectDynamically(name)
+                    values[field] = importFromString(name)
         return values
     
     @validator('sink', pre=True)
