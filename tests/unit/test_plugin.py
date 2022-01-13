@@ -104,5 +104,5 @@ class TestPluginManagerDiscovery(unittest.TestCase):
 
         path = "tests.unit.sample_plugins"
         self.manager.discover(path, cache=True)
-        expected = {path: tests.sample_plugins}
+        expected = {path: tests.unit.sample_plugins}
         self.assertDictEqual(expected, self.manager.cache)
