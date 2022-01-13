@@ -24,6 +24,7 @@ sphinx-rtd-theme = "^1.0.0"
 sphinxcontrib-napoleon = "^0.7"
 
 [tool.poe.tasks]
+help = "Run tests"
 test = "python -m unittest discover -s ./tests -p 'test*.py'"
 
 [tool.poe.tasks.coverage]
