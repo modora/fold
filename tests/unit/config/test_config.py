@@ -1,3 +1,3 @@
 import unittest
 
-from fold.config.common import ConfigError, Config
+from fold.config.common import ConfigError, BaseConfig

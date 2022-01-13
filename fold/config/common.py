@@ -3,7 +3,8 @@ from types import NoneType
 from typing import Iterable, Optional, Dict, List, Set
 from abc import abstractmethod
 from pathlib import Path
-from collections import UserDict
+
+from pydantic import BaseModel
 
 from fold.plugin import Plugin, PluginManager
 
@@ -23,7 +24,7 @@ class ConfigFilePlugin(Plugin):
         pass
 
 
-class Config(UserDict):
+class BaseConfig(BaseModel):
     @classmethod
     @property
     def DEFAULT_PARSERS(cls) -> Set[ConfigFilePlugin]:
@@ -32,7 +33,7 @@ class Config(UserDict):
     @classmethod
     def fromText(
         cls, text: str, parsers: Optional[Iterable[ConfigFilePlugin]] = None
-    ) -> Config:
+    ) -> BaseConfig:
         """Parse a config as a single string
 
         Args:
@@ -43,7 +44,7 @@ class Config(UserDict):
             ConfigError: None of the parsers worked
 
         Returns:
-            Config: config object
+            BaseConfig: Base config model
         """
         # If the parsers are not defined, then discover the parsers first.
         if parsers is None:
@@ -59,12 +60,12 @@ class Config(UserDict):
         else:
             # None of them worked...
             raise ConfigError(f"Failed to parse {text}")
-        return Config(config)
+        return BaseConfig(**config)
 
     @classmethod
     def fromPath(
         cls, path: Path, parsers: Optional[Iterable[ConfigFilePlugin]] = None
-    ) -> Config:
+    ) -> BaseConfig:
         # If the parsers are not defined, then discover the parsers first.
         if parsers is None:
             parsers = cls.DEFAULT_PARSERS
