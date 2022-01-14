@@ -5,3 +5,4 @@ build/
 htmlcov/
 .coverage
 scratch.py
+docs/src/_build
