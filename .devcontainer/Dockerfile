@@ -9,6 +9,8 @@ ARG NODE_VERSION="none"
 RUN if [ "${NODE_VERSION}" != "none" ]; then su vscode -c "umask 0002 && . /usr/local/share/nvm/nvm.sh && nvm install ${NODE_VERSION} 2>&1"; fi
 
 # Install poetry
+# Poetry advises against installing in this manner and use their installation script for an isolated, user install. 
+# Because this is an isolated docker environement, this is not an issue.
 RUN pip3 --disable-pip-version-check --no-cache-dir install poetry
 # Install poetry plugins
 RUN pip3 --disable-pip-version-check --no-cache-dir install poethepoet
@@ -23,4 +25,4 @@ RUN poe _bash_completion > /etc/bash_completion.d/poe.bash-completion
 # Mount VSCode extensions as a volume
 RUN mkdir -p /home/vscode/.vscode-server/extensions \
     && chown -R vscode \
-    /home/vscode/.vscode-server \
+    /home/vscode/.vscode-server
