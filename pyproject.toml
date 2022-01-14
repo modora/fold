@@ -41,7 +41,7 @@ cmd = "python -m coverage html"
 deps = ["coverage"]
 help = "Generate coverage html"
 
-[tool.poe.tasks.docs_html]
+[tool.poe.tasks.docs]
 cmd = "make html"
 help = "Build the documentation"
 
