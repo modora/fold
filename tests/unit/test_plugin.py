@@ -8,6 +8,12 @@ if TYPE_CHECKING:
     from fold.config import Content
 
 
+class TestPlugin(unittest.TestCase):
+    def testNoSubclass(self):
+        """If user does not subclass the Plugin class, then raise TypeError"""
+        self.assertRaises(TypeError, Plugin)
+
+
 class TestPluginManagerCacheFlush(unittest.TestCase):
     @classmethod
     def setUpClass(cls) -> None:
