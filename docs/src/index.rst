@@ -8,9 +8,8 @@ Welcome to fold's documentation!
 
 .. toctree::
    :maxdepth: 2
-   :caption: Contents:
 
-
+   installation
 
 Indices and tables
 ==================
