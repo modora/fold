@@ -10,6 +10,7 @@ Welcome to fold's documentation!
    :maxdepth: 2
 
    installation
+   api
    support
 
 Indices and tables
