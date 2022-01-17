@@ -1,0 +1,6 @@
+Plugins
+=======
+
+.. toctree:: 
+    
+    outputs/index

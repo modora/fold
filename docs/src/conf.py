@@ -24,6 +24,8 @@ author = "Stanley Wu"
 # The full version, including alpha/beta/rc tags
 release = "0.2.0"
 
+add_module_names = False
+autodoc_typehints = "none"
 
 # -- General configuration ---------------------------------------------------
 

@@ -1,0 +1,6 @@
+Outputs
+=======
+
+.. toctree::
+
+    stdout
