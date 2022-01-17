@@ -9,6 +9,7 @@ Welcome to fold's documentation!
 .. toctree::
    :maxdepth: 2
 
+   introduction
    installation
    plugins/index
    api
