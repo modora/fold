@@ -22,6 +22,7 @@ myst-parser = "^0.16.1"
 poethepoet = "^0.12.0"
 sphinx-rtd-theme = "^1.0.0"
 sphinxcontrib-napoleon = "^0.7"
+myst = "^1.0.4"
 
 [tool.poe.tasks]
 help = "Run tests"

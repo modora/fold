@@ -1,5 +1,4 @@
-Support
-=======
+# Support
 
 I don't do social media so just create an issue at
 
