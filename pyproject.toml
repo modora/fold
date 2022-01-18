@@ -18,11 +18,11 @@ toml = "^0.10.2"
 Sphinx = "^4.3.2"
 black = "^21.12b0"
 coverage = "^6.2"
+myst = "^1.0.4"
 myst-parser = "^0.16.1"
 poethepoet = "^0.12.0"
 sphinx-rtd-theme = "^1.0.0"
 sphinxcontrib-napoleon = "^0.7"
-myst = "^1.0.4"
 
 [tool.poe.tasks]
 help = "Run tests"
@@ -43,7 +43,7 @@ deps = ["coverage"]
 help = "Generate coverage html"
 
 [tool.poe.tasks.docs]
-cmd = "make html"
+cmd = "make -C docs html"
 help = "Build the documentation"
 
 [build-system]
