@@ -1,8 +1,6 @@
-API Reference
-=============
+# API Reference
 
-Plugins
--------
+## Plugins
 
 ```{autoclass} fold.plugin.Plugin
 :members:
@@ -14,8 +12,7 @@ Plugins
 :members:
 ```
 
-Config
-------
+# Config
 
 ```{autoclass} fold.config.Content
 ```
@@ -33,8 +30,7 @@ Config
 ```{autoexception} fold.config.ConfigError
 ```
 
-Logger
-------
+# Logger
 
 ```{autoclass} fold.logger.LogHandlerConfig
 :members:
@@ -50,8 +46,7 @@ Logger
 :members:
 ```
 
-Outputs
--------
+# Outputs
 
 ```{autoclass} fold.outputs.OutputPlugin
 :members:
