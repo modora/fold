@@ -86,11 +86,30 @@ class LogHandlerConfig(BaseModel):
 
 
 class LogManager(Plugin):
-    def __init__(self, config: List[LogHandlerConfig], *args, **kwargs) -> None:
+    def __init__(self, config, *args, **kwargs):
         logger.remove()  # clear any existing handlers
-        for handlerConfig in config:
-            logger.add(**handlerConfig.dict(exclude_none=True, exclude_unset=True))
+        match config:
+            case list():
+                for handlerConfig in config:
+                    try:
+                        logger.add(**handlerConfig.dict(exclude_none=True, exclude_unset=True))
+                    except AttributeError:
+                        logger.add(handlerConfig)
+            case dict():
+                try:
+                    logger.add(config.dict(exclude_none=True, exclude_unset=True))
+                except AttributeError:
+                    logger.add(config)
+            case _:
+                raise TypeError
 
     @classmethod
-    def parseConfig(cls, config: Content, *args, **kwargs) -> List[LogHandlerConfig]:
-        return [LogHandlerConfig(**conf) for conf in config]
+    def parseConfig(cls, config, *args, **kwargs):
+        match config:
+            case list():
+                return [LogHandlerConfig(**conf) for conf in config]
+            case dict():
+                return LogHandlerConfig(**config)
+            case _:
+                raise TypeError
+        
