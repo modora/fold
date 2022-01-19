@@ -55,19 +55,26 @@ class OutputManager(Plugin):
     @classmethod
     def parseConfig(
         cls,
-        config: Content,
+        config,
         plugins: Optional[Mapping[str, OutputPlugin]] = None,
         *args,
         **kwargs
-    ) -> List[OutputHandlerConfig]:
+    ):
         if plugins is None:
             plugins = cls.DEFAULT_PLUGINS
         # Validate the base handler keys first, then use the plugin parser to parse the remaining keys. Validation is
         # performed in the pydantic model so we just simply type casting the variable will run the validators
-        config: List[OutputHandlerConfig] = [
-            OutputHandlerConfig(**conf) for conf in config
-        ]
-        return [plugins[conf.name].parseConfig(**conf) for conf in config]
+        match config:
+            case list():
+                config: List[OutputHandlerConfig] = [
+                    OutputHandlerConfig(**conf) for conf in config
+                ]
+                return [plugins[conf.name].parseConfig(**conf) for conf in config]
+            case dict():
+                config: OutputHandlerConfig = OutputHandlerConfig(**config)
+                return plugins[config.name].parseConfig(config)
+            case _:
+                raise TypeError
 
     def write(self, data: Any):
         for handler in self.handlers:
