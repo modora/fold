@@ -1,12 +1,12 @@
 from __future__ import annotations
 from typing import TYPE_CHECKING
-from fold.plugin import Plugin
+from fold.core.plugin import Plugin
 
 if TYPE_CHECKING:
-    from fold.config import Content
+    from fold.core.config import Content
 
 
-class P2(Plugin):
+class P1(Plugin):
     @classmethod
     def parseConfig(cls, config: Content) -> Content:
         return config

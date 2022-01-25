@@ -3,7 +3,7 @@ authors = ["Stanley Wu <stanleywu@scrappylabs.dev>"]
 description = ""
 license = "MIT"
 name = "fold"
-version = "0.2.0"
+version = "0.3.0"
 
 packages = [{include = "fold"}]
 

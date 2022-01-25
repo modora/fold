@@ -1,12 +1,12 @@
 import unittest
 
-from fold.config.json import JSONConfig
+from fold.plugins.config.toml import TOMLConfig
 
 
-class TestJSONConfigParser(unittest.TestCase):
+class TestTOMLConfigParser(unittest.TestCase):
     @classmethod
     def setUpClass(cls) -> None:
-        cls.parser = JSONConfig
+        cls.parser = TOMLConfig
 
     def _test(self, content: str, expected: dict | Exception):
         try:
@@ -18,14 +18,14 @@ class TestJSONConfigParser(unittest.TestCase):
             self.assertRaises(expected, self.parser, content)
 
     def testEmptyFile(self):
-        content = "{}"
+        content = ""
         expected = {}
 
         self._test(content, expected)
 
     def testString(self):
         content = """
-        {"foo" : "bar"}
+        foo = "bar"
         """
         expected = {"foo": "bar"}
 
@@ -33,7 +33,8 @@ class TestJSONConfigParser(unittest.TestCase):
 
     def testStrings(self):
         content = """
-        {"foo": "bar", "hello": "world"}
+        foo = "bar"
+        hello = "world"
         """
         expected = {"foo": "bar", "hello": "world"}
 
@@ -41,7 +42,9 @@ class TestJSONConfigParser(unittest.TestCase):
 
     def testDict(self):
         content = """
-        {"pokemon": {"pikachu": "electric", "mew": "psychic"}}
+        [pokemon]
+        pikachu = "electric"
+        mew = "psychic"
         """
         expected = {"pokemon": {"pikachu": "electric", "mew": "psychic"}}
 
@@ -49,10 +52,13 @@ class TestJSONConfigParser(unittest.TestCase):
 
     def testDicts(self):
         content = """
-        {
-            "pokemon": {"pikachu": "electric", "mew": "psychic"},
-            "superheros": {"batman": "DC", "ironman": "Marvel"}
-        }
+        [pokemon]
+        pikachu = "electric"
+        mew = "psychic"
+        
+        [superheros]
+        batman = "DC"
+        ironman = "Marvel"
         """
 
         expected = {
@@ -64,17 +70,15 @@ class TestJSONConfigParser(unittest.TestCase):
 
     def testList(self):
         content = """
-        {"shapes": ["square", "circle"]}
+        shapes = ["square", "circle"]
         """
         expected = {"shapes": ["square", "circle"]}
         self._test(content, expected)
 
     def testLists(self):
         content = """
-        {
-            "shapes": ["square", "circle"],
-            "colors": ["red", "green", "blue"]
-        }
+        shapes = ["square", "circle"]
+        colors = ["red", "green", "blue"]
         """
         expected = {
             "shapes": ["square", "circle"],
@@ -85,7 +89,13 @@ class TestJSONConfigParser(unittest.TestCase):
 
     def testNestedDict(self):
         content = """
-        {"car": {"make": "Honda", "model": "Civic", "position": {"x": 1, "y": 2}}}
+        [car]
+        make = "Honda"
+        model = "Civic"
+        
+        [car.position]
+        x = 1
+        y = 2
         """
         expected = {
             "car": {"make": "Honda", "model": "Civic", "position": {"x": 1, "y": 2}}
@@ -95,12 +105,13 @@ class TestJSONConfigParser(unittest.TestCase):
     def testListedDict(self):
         """Test list of dicts"""
         content = """
-        {
-            "employee": [
-                {"name": "Bruce Wayne", "occupation": "CEO"},
-                {"name": "Batman", "occupation": "superhero"}
-            ]
-        }
+        [[employee]]
+        name = "Bruce Wayne"
+        occupation = "CEO"
+        
+        [[employee]]
+        name = "Batman"
+        occupation = "superhero"
         """
 
         expected = {
@@ -114,12 +125,14 @@ class TestJSONConfigParser(unittest.TestCase):
     def testListedDictReversed(self):
         """Test list of dicts checking if over is preserved"""
         content = """
-        {
-            "employee": [
-                {"name": "Batman", "occupation": "superhero"},
-                {"name": "Bruce Wayne", "occupation": "CEO"}
-            ]
-        }
+        [[employee]]
+        name = "Batman"
+        occupation = "superhero"
+        
+        [[employee]]
+        name = "Bruce Wayne"
+        occupation = "CEO"
+        
         """
 
         expected = {

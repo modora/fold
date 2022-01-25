@@ -1,11 +1,8 @@
-from __future__ import annotations
-from typing import TYPE_CHECKING
 import unittest
 
-from fold.plugin import Plugin, PluginManager
+from fold.core.plugin import Plugin
 
-if TYPE_CHECKING:
-    from fold.config import Content
+from fold.utils.plugin import PluginManager
 
 
 class TestPlugin(unittest.TestCase):
@@ -42,9 +39,9 @@ class TestPluginManagerLoader(unittest.TestCase):
         self.manager._cache = {}
 
     def testLoader(self):
-        from tests.unit.sample_plugins.p1 import P1
+        from .sample_plugins.p1 import P1
 
-        path = "tests.unit.sample_plugins.p1:P1"
+        path = "tests.unit.core.sample_plugins.p1:P1"
         obj = self.manager.load(path, cache=False)
 
         self.assertEqual(P1, obj)
@@ -52,7 +49,7 @@ class TestPluginManagerLoader(unittest.TestCase):
     def testCacheRead(self):
         class Bar(Plugin):  # Sample plugin
             @classmethod
-            def parseConfig(cls, config: Content) -> Content:
+            def parseConfig(cls, config):
                 return super().parseConfig(config)
 
         path = "tests.nonexistentpath:foo"
@@ -61,9 +58,9 @@ class TestPluginManagerLoader(unittest.TestCase):
         self.assertEqual(Bar, obj)
 
     def testCacheWrite(self):
-        from tests.unit.sample_plugins.p1 import P1
+        from .sample_plugins.p1 import P1
 
-        path = "tests.unit.sample_plugins.p1:P1"
+        path = "tests.unit.core.sample_plugins.p1:P1"
         self.manager.load(path, cache=True)
 
         expected = {path: P1}
@@ -81,10 +78,10 @@ class TestPluginManagerDiscovery(unittest.TestCase):
         self.manager._cache = {}
 
     def testDiscoverMethod(self):
-        from tests.unit.sample_plugins import P1, P2
+        from .sample_plugins import P1, P2
 
         expected = {P1, P2}
-        path = "tests.unit.sample_plugins"
+        path = "tests.unit.core.sample_plugins"
         plugins = self.manager.discover(path, cache=False)
         self.assertSetEqual(expected, plugins)
 
@@ -95,7 +92,7 @@ class TestPluginManagerDiscovery(unittest.TestCase):
 
             class FakePlugin(Plugin):
                 @classmethod
-                def parseConfig(cls, config: Content) -> Content:
+                def parseConfig(cls, config):
                     return config
 
         path = "fake.path"
@@ -106,9 +103,9 @@ class TestPluginManagerDiscovery(unittest.TestCase):
         self.assertSetEqual(expected, plugins)
 
     def testCacheWrite(self):
-        import tests.unit.sample_plugins
+        import tests.unit.core.sample_plugins
 
-        path = "tests.unit.sample_plugins"
+        path = "tests.unit.core.sample_plugins"
         self.manager.discover(path, cache=True)
         expected = {path: tests.unit.sample_plugins}
         self.assertDictEqual(expected, self.manager.cache)

@@ -4,7 +4,7 @@ from pathlib import Path
 
 from pydantic import ValidationError
 
-from fold.logger.logger import LogHandlerConfig
+from fold.plugins.logger.logger import LogHandlerConfig
 
 
 class TestLogConfig(unittest.TestCase):

@@ -1,6 +1,6 @@
 import unittest
 
-from fold.utils.dynamicImport import importFromString
+from fold.utils.imp import importFromString
 
 
 class TestStringImporter(unittest.TestCase):

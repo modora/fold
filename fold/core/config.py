@@ -1,12 +1,15 @@
 from __future__ import annotations
 from types import NoneType
-from typing import Iterable, Optional, Dict, List, Set
-from abc import abstractmethod
+from typing import TYPE_CHECKING, Iterable, Optional, Dict, List, Set
 from pathlib import Path
 
-from pydantic import BaseModel
+from pydantic import BaseModel, validator
+from pydantic.fields import ModelField
 
-from fold.plugin import Plugin, PluginManager
+from fold.utils.plugin import PluginManager
+
+if TYPE_CHECKING:
+    from fold.plugins.config import ConfigFilePlugin
 
 Content = str | int | float | bool | NoneType | List["Content"] | Dict[str, "Content"]
 
@@ -15,20 +18,72 @@ class ConfigError(Exception):
     pass
 
 
-class ConfigFilePlugin(Plugin):
-    EXTENSIONS: Iterable[str] = set()
+class ConfigManager:
+    def __init__(self, config: BaseModel, *args, **kwargs) -> None:
+        self.config = config
+        
+    @classmethod
+    def parseConfig(cls, config: Content) -> BaseModel | List[BaseModel]:
+        match config:
+            case str():
+                return cls.parseStr(config)
+            case int():
+                return cls.parseInt(config)
+            case float():
+                return cls.parseFloat(config)
+            case bool():
+                return cls.parseBool(config)
+            case NoneType():
+                return cls.parseNone(config)
+            case list():
+                return cls.parseList(config)
+            case dict():
+                return cls.parseDict(config)
 
     @classmethod
-    @abstractmethod
-    def fromText(cls, text: str) -> Dict[str, Content]:
-        pass
+    def parseStr(cls, config: str) -> BaseModel:
+        raise NotImplementedError
+
+    @classmethod
+    def parseInt(cls, config: int) -> BaseModel:
+        raise NotImplementedError
+
+    @classmethod
+    def parseFloat(cls, config: float) -> BaseModel:
+        raise NotImplementedError
+
+    @classmethod
+    def parseBool(cls, config: bool) -> BaseModel:
+        raise NotImplementedError
+
+    @classmethod
+    def parseNone(cls, config: NoneType) -> BaseModel:
+        raise NotImplementedError
+
+    @classmethod
+    def parseList(cls, config: List[Content]) -> List[BaseModel]:
+        return [cls.parseConfig(conf) for conf in config]
+
+    @classmethod
+    def parseDict(cls, config: Dict[str, Content]) -> BaseModel:
+        raise NotImplementedError
 
 
 class BaseConfig(BaseModel):
+    class Config:
+        validate_all = True
+        arbitrary_types_allowed = True
+        
+    @validator("*", pre=True, always=True)
+    def name(cls, content: Content, field: ModelField):
+        manager: ConfigManager = field.type_
+        config = manager.parseConfig(content)
+        return manager(config)
+    
     @classmethod
     @property
     def DEFAULT_PARSERS(cls) -> Set[ConfigFilePlugin]:
-        return PluginManager(ConfigFilePlugin).discover("fold.config")
+        return PluginManager(ConfigFilePlugin).discover("fold.plugins.config")
 
     @classmethod
     def fromText(

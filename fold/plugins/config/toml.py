@@ -2,7 +2,8 @@ from typing import Dict
 
 import toml
 
-from .common import ConfigFilePlugin, Content
+from fold.core import Content
+from .common import ConfigFilePlugin
 
 
 class TOMLConfig(ConfigFilePlugin):

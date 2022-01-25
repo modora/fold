@@ -1,6 +1,6 @@
 import unittest
 
-from fold.utils.modObjStr import parseModuleObjectString, parseObjectAttrString
+from fold.utils.stringParser import parseModuleObjectString, parseObjectAttrString
 
 
 class TestModuleObjectStringParser(unittest.TestCase):

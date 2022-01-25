@@ -4,7 +4,7 @@ from io import StringIO
 
 from pydantic import ValidationError
 
-from fold.outputs.stdout import Stdout, StdoutConfig
+from fold.plugins.outputs.stdout import Stdout, StdoutConfig
 
 
 class TestStdoutParser(unittest.TestCase):

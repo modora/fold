@@ -1,7 +1,8 @@
 from typing import Dict
 import json
 
-from .common import ConfigFilePlugin, Content
+from fold.core import Content
+from .common import ConfigFilePlugin
 
 
 class JSONConfig(ConfigFilePlugin):

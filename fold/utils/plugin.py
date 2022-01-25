@@ -1,22 +1,11 @@
 from __future__ import annotations
-from typing import TYPE_CHECKING, Optional, Dict, Set, Any
-from abc import ABC, abstractmethod
-import importlib
+from typing import TYPE_CHECKING, Any, Optional, Dict, Set
+from importlib import import_module
+
+from .imp import importFromString
 
 if TYPE_CHECKING:
-    from fold.config import Content
-
-from fold.utils import importFromString
-
-
-class Plugin(ABC):
-    def __init__(self, config: Content, *args, **kwargs) -> None:
-        pass
-
-    @classmethod
-    @abstractmethod
-    def parseConfig(cls, config: Content, *args, **kwargs) -> Content:
-        pass
+    from fold.core import Plugin
 
 
 class PluginManager:
@@ -95,7 +84,7 @@ class PluginManager:
         if cache and name in self.cache:
             module = self.cache[name]
         else:  # cache missed or disabled
-            module = importlib.import_module(name, package)
+            module = import_module(name, package)
             # update cache
             if cache:
                 self.cache[name] = module

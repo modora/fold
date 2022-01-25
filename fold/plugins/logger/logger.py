@@ -1,11 +1,11 @@
 from __future__ import annotations
 import sys
 from typing import (
-    TYPE_CHECKING,
-    List,
+    Iterable,
     Optional,
     Callable,
     Coroutine,
+    Dict
 )
 from logging import Handler
 from pathlib import Path
@@ -13,14 +13,11 @@ from pathlib import Path
 from pydantic import BaseModel, root_validator, validator, Field
 from loguru import logger
 
-from fold.plugin import Plugin
-from fold.utils import importFromString
-
-if TYPE_CHECKING:
-    from fold.config import Content
+from fold.core import ConfigManager, Content
+from fold.utils.imp import importFromString
 
 class LogHandlerConfig(BaseModel):
-    sink: str | Path | Callable | Coroutine | Handler | object
+    sink: str | Path | Callable | Coroutine | Handler
     level: Optional[int | str]
     format: Optional[str | Callable]
     filter: Optional[str | dict | Callable]
@@ -69,8 +66,8 @@ class LogHandlerConfig(BaseModel):
             
     @validator("sink")
     def filelike_sink(cls, value):
-        # if generic object, test whether it contains a write method
-        if not isinstance(value, str | Path | Callable | Coroutine | Handler):
+        # if not a expected sink, test whether it contains a write method
+        if not any(isinstance(value, cls.__fields__["sink"])):
             if hasattr(value, "write") and callable(value.write):
                 return value
             raise TypeError("Object does not have a write method defined")
@@ -85,31 +82,26 @@ class LogHandlerConfig(BaseModel):
         return value
 
 
-class LogManager(Plugin):
-    def __init__(self, config, *args, **kwargs):
-        logger.remove()  # clear any existing handlers
-        match config:
-            case list():
-                for handlerConfig in config:
-                    try:
-                        logger.add(**handlerConfig.dict(exclude_none=True, exclude_unset=True))
-                    except AttributeError:
-                        logger.add(handlerConfig)
-            case dict():
-                try:
-                    logger.add(config.dict(exclude_none=True, exclude_unset=True))
-                except AttributeError:
-                    logger.add(config)
-            case _:
-                raise TypeError
-
-    @classmethod
-    def parseConfig(cls, config, *args, **kwargs):
-        match config:
-            case list():
-                return [LogHandlerConfig(**conf) for conf in config]
-            case dict():
-                return LogHandlerConfig(**config)
-            case _:
-                raise TypeError
+class LogManager(ConfigManager):
+    def __init__(self, config: LogHandlerConfig | Iterable[LogHandlerConfig], *args, **kwargs):
+        if isinstance(config, LogHandlerConfig):
+            config = [config]
         
+        super().__init__(config)
+        
+        self.remove()  # clear any existing handlers
+        self.configure(config)
+    
+    @classmethod
+    def parseDict(cls, config: Dict[str, Content], *args, **kwargs) -> LogHandlerConfig:
+        return LogHandlerConfig(**config)
+        
+    def remove(self, *args, **kwargs):
+        logger.remove(*args, **kwargs)
+        
+    def add(self, *args, **kwargs):
+        logger.add(*args, **kwargs)
+        
+    def configure(self, config: Iterable[LogHandlerConfig]):
+        for conf in config:
+            self.add(**conf.dict(exclude_none=True, exclude_unset=True))

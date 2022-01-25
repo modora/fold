@@ -1,6 +1,6 @@
 from typing import Optional, Any
 import importlib
-from .modObjStr import parseModuleObjectString, parseObjectAttrString
+from .stringParser import parseModuleObjectString, parseObjectAttrString
 
 
 def importFromString(name: str, package: Optional[str] = None) -> Any:
