@@ -1,15 +1,11 @@
 {
-  "python.testing.unittestArgs": [
-    "-v",
-    "-s",
-    "./tests",
-    "-p",
-    "test_*.py"
-  ],
-  "python.testing.pytestEnabled": false,
-  "python.testing.unittestEnabled": true,
   "python.defaultInterpreterPath": "${workspaceFolder}/.venv/bin/python",
   "restructuredtext.syntaxHighlighting.disabled": true,
   "esbonio.server.enabled": false,
-  "restructuredtext.languageServer.disabled": true
+  "restructuredtext.languageServer.disabled": true,
+  "python.testing.pytestArgs": [
+    "test"
+  ],
+  "python.testing.unittestEnabled": false,
+  "python.testing.pytestEnabled": true
 }

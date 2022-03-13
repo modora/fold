@@ -103,9 +103,9 @@ class TestPluginManagerDiscovery(unittest.TestCase):
         self.assertSetEqual(expected, plugins)
 
     def testCacheWrite(self):
-        import tests.unit.core.sample_plugins
+        import test.unit.core.sample_plugins
 
         path = "tests.unit.core.sample_plugins"
         self.manager.discover(path, cache=True)
-        expected = {path: tests.unit.sample_plugins}
+        expected = {path: test.unit.sample_plugins}
         self.assertDictEqual(expected, self.manager.cache)
