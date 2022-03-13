@@ -4,25 +4,26 @@
 ARG VARIANT="3.10-bullseye"
 FROM mcr.microsoft.com/vscode/devcontainers/python:0-${VARIANT}
 
-# [Choice] Node.js version: none, lts/*, 16, 14, 12, 10
-ARG NODE_VERSION="none"
-RUN if [ "${NODE_VERSION}" != "none" ]; then su vscode -c "umask 0002 && . /usr/local/share/nvm/nvm.sh && nvm install ${NODE_VERSION} 2>&1"; fi
+# Remote user
+ARG USERNAME="vscode"
+# Create user if not exist
+RUN id -u ${USERNAME} &>/dev/null || useradd -ms /bin/bash ${USERNAME}
 
-# Install poetry
-# Poetry advises against installing in this manner and use their installation script for an isolated, user install. 
-# Because this is an isolated docker environement, this is not an issue.
-RUN pip3 --disable-pip-version-check --no-cache-dir install poetry
-# Install poetry plugins
-RUN pip3 --disable-pip-version-check --no-cache-dir install poethepoet
+USER ${USERNAME}
+
+# Add .local/bin to $PATH
+ENV PATH="${PATH}:/home/${USERNAME}/.local/bin"
+
+# Install poetry and poe
+RUN pip3 --disable-pip-version-check --no-cache-dir install --user poetry poethepoet
 
 # Enable poethepoet bash completion
-RUN poe _bash_completion > /etc/bash_completion.d/poe.bash-completion
+RUN poe _bash_completion >> ~/.bash-completion
 
 # [Optional] Uncomment this section to install additional OS packages.
 # RUN apt-get update && export DEBIAN_FRONTEND=noninteractive \
 #     && apt-get -y install --no-install-recommends <your-package-list-here>
 
 # Mount VSCode extensions as a volume
-RUN mkdir -p /home/vscode/.vscode-server/extensions \
-    && chown -R vscode \
-    /home/vscode/.vscode-server
+RUN mkdir -p /home/${USERNAME}/.vscode-server/extensions \
+    && chown -R ${USERNAME} /home/${USERNAME}/.vscode-server
